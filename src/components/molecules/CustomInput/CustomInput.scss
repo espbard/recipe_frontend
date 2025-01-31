@@ -1,0 +1,62 @@
+@import "../../../styles/constants.scss";
+
+.CustomInputContainer {
+    display: grid;
+    grid-auto-rows: 80% 10px;
+    grid-auto-columns: 100%;
+    margin-top: 10px;
+
+
+    .CustomInput {
+        grid-row: 1;
+        border-radius: 4px;
+        border: 2px solid var(--color-midnight-green);
+        font-size: var(--font-size-small);
+        color: var(--color-midnight-green);
+        font-weight: 500;
+    }
+
+    .CustomInputError {
+        grid-row: 2;
+        color: var(--color-imperial-red);
+        font-size: var(--font-size-xsmall);
+        padding: 0;
+        margin: 0;
+        margin-top: -5px;
+        color: transparent;
+    }
+
+    .CustomInputError.CustomInputErrorVisible {
+        color: var(--color-imperial-red);
+        animation: shake 0.2s;
+        animation-iteration-count: 3;
+    }
+}
+
+.CustomInput.InvalidCustomInput {
+    border: 2px solid var(--color-imperial-red);
+    animation: shake 0.2s;
+    animation-iteration-count: 3;
+}
+
+@keyframes shake {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(1deg);
+    }
+
+    50% {
+        transform: rotate(0eg);
+    }
+
+    75% {
+        transform: rotate(-1deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}

@@ -1,0 +1,302 @@
+@import "../../styles/constants.scss";
+
+.RecipeContainer {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-white);
+    overflow-x: auto;
+    border-radius: 20px;
+
+    .RecipeImageContainer {
+        width: 100%;
+        background: rgba(7, 79, 87, 0.2);
+        display: flex;
+        justify-content: center;
+        height: 100%;
+        max-height: 60vh;
+        overflow: hidden;
+
+        img {
+            width: 100%;
+            object-fit: contain;
+        }
+    }
+
+    .Recipe {
+        padding-left: 2%;
+        padding-right: 2%;
+
+        li {
+            font-size: var(--font-size-medium);
+            font-weight: 400;
+
+            .RecipeInput {
+                width: 80%;
+            }
+        }
+
+        .RecipeRow {
+            border-bottom: 2px solid var(--color-cerulean);
+            color: var(--color-almost-black);
+            padding-bottom: 15px;
+            padding-top: 15px;
+
+        }
+
+        .PortionsContainer {
+            display: flex;
+            align-items: center;
+            justify-content: start;
+
+            .PortionsLabel {
+                color: var(--color-midnight-green);
+            }
+
+            .Portions {
+                color: var(--color-midnight-green);
+                border: 2px solid var(--color-midnight-green);
+                width: 60px;
+                text-align: center;
+                margin-left: auto;
+                margin-right: 1%;
+                padding-top: 5px;
+                padding-bottom: 5px;
+                border-radius: 5px;
+            }
+
+            .PortionsButtonsContainer {
+                margin-right: 2%;
+
+                .PortionsButtonContainer {
+                    border-radius: 6px;
+                    margin-top: 2px;
+                    margin-bottom: 2px;
+                    overflow: hidden;
+
+                    p {
+                        padding: 3px;
+                        padding-left: 10px;
+                        padding-right: 10px;
+                        text-align: center;
+                    }
+                }
+            }
+        }
+
+
+        #RecipeTitleContainer {
+            color: var(--color-midnight-green);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            .RecipeTitle {
+                h3 {
+                    flex: 1;
+                    margin-bottom: 0;
+                    text-align: center;
+                }
+            }
+        }
+
+        .RecipeSubTitle {
+            color: var(--color-midnight-green);
+        }
+
+        #RecipeDescriptionContainer {
+            display: flex;
+            flex-direction: column;
+
+            .RecipeDescription {
+                margin: 0;
+                font-weight: 500;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+        }
+
+        #RecipeInfoContainer {
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            padding-left: 10px;
+            padding-right: 10px;
+
+            .RecipeInfo {
+                flex: 1;
+                display: flex;
+
+                p {
+                    font-size: var(--font-size-xsmall);
+                    font-weight: 500;
+                    padding-right: 6px;
+                    color: var(--color-almost-black);
+                }
+            }
+        }
+    }
+
+    .RecipeInputContainer {
+        width: 100%;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+
+        .RecipeInputTitle {
+            margin: 0;
+            flex: 1;
+            color: var(--color-midnight-green);
+        }
+
+        .RecipeInput {
+            margin: 0;
+            font-size: var(--font-size-xlarge);
+            font-weight: 600;
+            color: var(--color-midnight-green);
+            padding: 5px;
+            margin-right: 20px;
+            min-width: 35px;
+        }
+
+        .RecipeInputButtonContainer {
+            width: 80px;
+        }
+
+        .CustomButton {
+            height: 20px;
+            width: 20px;
+        }
+
+        .RecipeIngredientInputRow {
+            margin: 0;
+            flex: 3;
+            font-size: var(--font-size-xlarge);
+            font-weight: 600;
+            color: var(--color-midnight-green);
+            padding: 5px;
+            margin-right: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+
+            .RecipeIngredientInput {
+                display: flex;
+                width: 100%;
+                background: var(--color-almost-white);
+                padding: 5px;
+
+                .RecipeIngredientInputBox {
+                    border: 1px solid var(--color-midnight-green);
+                    border-radius: 2px;
+                    padding: 4px;
+                    overflow: hidden;
+                    display: flex;
+                    align-items: center;
+                    flex: 2;
+
+                    .RecipeIngredientInputLabel {
+                        margin: 0;
+                        min-width: 15px;
+                        font-size: var(--font-size-small);
+                    }
+
+                    .RecipeInput {
+                        flex: 1;
+                        border-radius: 2px;
+                        width: 50%;
+                        margin-left: 5px;
+                        padding: 2px;
+                        margin-right: 0;
+                        font-size: var(--font-size-xsmall);
+                    }
+                }
+
+                .RecipeInputButtonContainer {
+                    width: 40px;
+                    margin-left: 2px;
+                    margin-right: 2px;
+                }
+
+                .RecipeIngredientSmallerInputBox {
+                    @extend .RecipeIngredientInputBox;
+                    flex: 1;
+                }
+            }
+        }
+    }
+
+    .RecipeIngredients {
+        display: flex;
+
+        ul {
+            flex: 5;
+        }
+    }
+
+    .RecipeEditButtonContainer {
+        width: 80px;
+
+        .CustomButton {
+            height: 20px;
+            width: 20px;
+        }
+    }
+
+    .addMoreButtonContainer {
+        width: 90px;
+        margin-left: 2px;
+    }
+}
+
+.RecipeButtonsContainer {
+    display: flex;
+
+    .OneHalf {
+        flex: 1;
+    }
+}
+
+.TagsContainer {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+@media screen and (max-width: 1000px) {
+    .RecipeContainer {
+        .Recipe {
+            #RecipeTitleContainer {
+                .RecipeTitle {
+                    h3 {
+                        margin-top: 5px;
+                    }
+                }
+            }
+
+            .RecipeRow {
+                padding-top: 0;
+                padding-bottom: 0;
+            }
+
+            .RecipeSubTitle {
+                margin-top: 5px;
+                margin-bottom: 10px;
+            }
+
+            #RecipeInfoContainer {
+                flex-direction: column;
+                align-items: start;
+                margin-top: 15px;
+                margin-bottom: 15px;
+
+                .RecipeInfo {
+                    p {
+                        margin-top: 2px;
+                        margin-bottom: 2px;
+                    }
+                }
+            }
+        }
+
+    }
+}

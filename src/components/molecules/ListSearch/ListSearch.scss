@@ -1,0 +1,149 @@
+@import "../../../styles/constants.scss";
+
+.ListSearchContainer {
+    display: flex;
+    flex-direction: column;
+
+    label {
+        font-size: var(--font-size-small);
+    }
+
+    .ListSearchInputContainer {
+        .ListSearchInput {
+            background: var(--color-white);
+
+            // Button -> Don't select text
+            -webkit-user-select: none;
+            /* Safari */
+            -ms-user-select: none;
+            /* IE 10 and IE 11 */
+            user-select: none;
+            /* Standard syntax */
+        }
+    }
+
+    .ListSearchInputRow {
+        display: flex;
+        justify-content: space-between;
+
+        .ListSearchInput {
+            flex: 4;
+            font-size: 2px;
+        }
+
+        .ListSearchInputClear {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            flex: 1;
+            margin-left: 5px;
+            font-size: var(--font-size-xxlarge);
+            color: var(--color-old-rose);
+            cursor: pointer;
+
+            // Button -> Don't select text
+            -webkit-user-select: none;
+            /* Safari */
+            -ms-user-select: none;
+            /* IE 10 and IE 11 */
+            user-select: none;
+            /* Standard syntax */
+        }
+
+        .ListSearchInputClear:hover {
+            background: var(--color-old-rose);
+            color: var(--color-almost-white);
+        }
+
+        .ListSearchInputClear:active {
+            color: var(--color-imperial-red);
+        }
+    }
+
+    .ListSearchOutputContainer {
+        // margin-left: auto;
+        // margin-right: auto;
+        // background: var(--color-almost-white);
+        // border-radius: 4px;
+
+        .ListSearchOutput {
+            display: flex;
+            // justify-content: space-around;
+            margin-top: 8px;
+            margin-bottom: 8px;
+
+            .ListSearchOutputText {
+                width: 73%;
+                padding: 5px;
+                background: var(--color-almost-white);
+                color: var(--color-old-rose);
+                border: 1px solid #c4c4c4;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+            }
+
+            // justify-content: space-between;
+            // align-items: center;
+            // font-size: var(--font-size-medium);
+            // font-weight: 600;
+            // color: var(--color-midnight-green);
+            // padding: 10px;
+            // border: 2px solid var(--color-midnight-green);
+            // border-top: 0;
+            // border-bottom-left-radius: 4px;
+            // border-bottom-right-radius: 4px;
+
+            .ListSearchOutputButton {
+                margin-right: 8px;
+
+                p {
+                    filter: brightness(0.95) invert(0.9) hue-rotate(270deg);
+                    padding: 1px;
+                }
+            }
+        }
+    }
+}
+
+.ListSearchInputItemClear {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    flex: 1;
+    font-size: var(--font-size-large);
+    color: var(--color-old-rose);
+    cursor: pointer;
+    margin-left: 6px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 6px;
+    padding-right: 6px;
+
+    // Button -> Don't select text
+    -webkit-user-select: none;
+    /* Safari */
+    -ms-user-select: none;
+    /* IE 10 and IE 11 */
+    user-select: none;
+    /* Standard syntax */
+
+    font-size: var(--font-size-xlarge);
+    font-weight: 900;
+}
+
+.ListSearchInputItemClear:hover {
+    filter: hue-rotate(0);
+    background: var(--color-old-rose);
+    color: var(--color-almost-white);
+
+    p {
+        margin: 100px;
+    }
+}
+
+.ListSearchInputItemClear:active {
+    color: var(--color-imperial-red);
+}
