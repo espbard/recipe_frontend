@@ -1,0 +1,223 @@
+@import "../../styles/constants.scss";
+
+#EditRecipePage {
+    background: var(--color-almost-white);
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    overflow: hidden;
+
+    h1 {
+        color: var(--color-midnight-green)
+    }
+
+    .EditRecipeRow {
+        background: var(--color-white);
+        padding: 5px;
+        padding-left: 15px;
+        padding-right: 15px;
+        margin-bottom: 5px;
+        display: flex;
+
+        .EditRecipeLabel {
+            font-size: var(--font-size-large);
+            font-weight: 700;
+            flex: 1;
+
+            .EditRecipeLabelText {
+                display: flex;
+                margin: 0;
+                align-items: center;
+
+                .ErrorText {
+                    color: var(--color-imperial-red);
+                    font-weight: 500;
+                    margin-left: 14px;
+                    font-size: var(--font-size-xsmall);
+                    animation: shake 0.2s;
+                    animation-iteration-count: 3;
+                }
+
+                .ErrorText::before {
+                    content: "*";
+                }
+            }
+        }
+
+        .EditRecipeInput {
+            font-size: var(--font-size-medium);
+            font-weight: 500;
+            flex: 4;
+            margin-left: 10px;
+            display: flex;
+            align-items: center;
+
+            ol {
+                padding-left: 0;
+
+                li {
+                    list-style-position: inside;
+                }
+            }
+        }
+
+        .EditRecipePortionsInputContainer {
+            display: flex;
+            flex: 4;
+
+            .EditRecipePortionsInput {
+                font-size: var(--font-size-large);
+                font-weight: 600;
+                color: var(--color-midnight-green);
+                width: 20%;
+                min-width: 80px;
+            }
+
+            .CustomButton {
+                width: 5%;
+                min-width: 40px;
+                margin-left: 5px;
+                border-radius: 5px;
+            }
+        }
+
+
+        .TagsContainer {
+            flex-wrap: wrap;
+        }
+
+        .EditRecipeImageText {
+            margin-left: 15px;
+
+            h6 {
+                color: var(--color-midnight-green);
+                margin: 0;
+            }
+        }
+    }
+}
+
+.WhiteRow {
+    background: var(--color-white);
+    margin-top: -10px;
+}
+
+.SaveButtonContainer {
+    background: var(--color-imperial-red);
+}
+
+.AddButtonContainer {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    width: 10%;
+    min-width: 50px;
+
+    .CustomButton {
+        border-radius: 5px;
+
+        p {
+            padding: 0;
+        }
+    }
+}
+
+.UploadImageButton {
+    background: var(--color-midnight-green);
+    color: var(--color-almost-white);
+    padding: 6px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.UploadImageButton:hover {
+    background: var(--color-cerulean);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.UploadImageButton:active {
+    box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.4);
+}
+
+@media screen and (max-width: 1000px) {
+    #EditRecipePage {
+        border-radius: 12px;
+
+        h1 {
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            overflow: hidden;
+            text-align: center;
+            background: white;
+            margin-bottom: 5px;
+            margin-top: 5px;
+        }
+
+        .EditRecipeRow {
+            flex-direction: column;
+            text-align: start;
+
+            .EditRecipeLabel {
+                font-size: var(--font-size-medium);
+            }
+
+            .UploadImageButton {
+                width: 100%;
+                text-align: center;
+            }
+
+            .EditRecipeImageText {
+                text-align: start;
+                margin-left: 0;
+
+                h6 {
+                    font-size: var(--font-size-xsmall)
+                }
+            }
+
+            textarea {
+                min-height: 80px;
+                max-width: 85%;
+                margin-bottom: 10px;
+            }
+        }
+
+        .EditRecipePortionsInputContainer {
+            justify-content: center;
+        }
+
+        .TagsContainer {
+            flex-direction: row;
+        }
+    }
+
+    .EditRecipeInput {
+        flex-direction: column;
+    }
+
+    .AddButtonContainer {
+        width: 100%;
+    }
+}
+
+@keyframes shake {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(1deg);
+    }
+
+    50% {
+        transform: rotate(0eg);
+    }
+
+    75% {
+        transform: rotate(-1deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}

@@ -1,0 +1,65 @@
+@import "../../../styles/constants.scss";
+
+.NewRecipeInstruction {
+    display: flex;
+    margin-bottom: 8px;
+
+    .NewRecipeInstructionNumber {
+        width: 50px;
+        margin: 0;
+    }
+
+    .NewRecipeInstructionText {
+        margin-right: 2px;
+        border-radius: 5px;
+        flex: 1;
+        font-size: var(--font-size-small);
+    }
+
+    .NewRecipeInstructionButtonsRow {
+        display: flex;
+
+        .CustomButton {
+            display: flex;
+            margin-left: 6px;
+            border-radius: 8px;
+            overflow: hidden;
+            justify-content: center;
+            margin-bottom: auto;
+            margin-top: 0;
+
+            p {
+                padding: 8px;
+                padding-top: 1px;
+                padding-bottom: 1px;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    .NewRecipeInstruction {
+        display: grid;
+        grid-auto-columns: 10% 50% 40%;
+
+        .NewRecipeInstructionNumber {
+            grid-row: 1;
+            grid-column: 1;
+            width: 100%;
+        }
+
+        .NewRecipeInstructionText {
+            grid-row: 1;
+            grid-column: 2;
+            width: 100%;
+        }
+
+        .NewRecipeInstructionButtonsRow {
+            grid-row: 1;
+            grid-column: 3;
+            width: 100%;
+            margin-left: 5px;
+            margin-bottom: 2px;
+        }
+    }
+}

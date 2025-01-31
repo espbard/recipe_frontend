@@ -1,0 +1,62 @@
+@import "../../../styles/constants.scss";
+
+
+.PageContent {
+    display: flex;
+    position: absolute;
+    top: 0;
+    left: 80px;
+    max-height: 100%;
+    overflow: hidden;
+    z-index: 1;
+    flex-direction: column;
+    width: calc(100% - 80px);
+    background: var(--color-almost-white);
+
+    #MainContent {
+        height: 100%;
+        overflow: auto;
+        padding: 35px;
+    }
+}
+
+.PageContent.DisableSideBar {
+    left: 0px;
+    width: 100%;
+}
+
+#LoadingPopUp {
+    position: absolute;
+    z-index: 10;
+    top: 14%;
+    left: calc(50%);
+    display: flex;
+
+    .loader {
+        width: 80px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background:
+            radial-gradient(farthest-side, #074f57 94%, #0000) top/12px 12px no-repeat,
+            conic-gradient(#0000 50%, #074f57);
+        -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 12px), #000 0);
+        animation: l13 0.9s infinite linear;
+    }
+
+    @keyframes l13 {
+        100% {
+            transform: rotate(1turn)
+        }
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    .PageContent {
+        left: 60px;
+        width: calc(100% - 60px);
+
+        #MainContent {
+            padding: 15px;
+        }
+    }
+}

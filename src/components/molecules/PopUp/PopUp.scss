@@ -1,0 +1,86 @@
+@import "../../../styles/constants.scss";
+
+.PopUpOverlay {
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 3;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .PopUp {
+        background: var(--color-almost-white);
+        width: 50%;
+        min-width: 325px;
+        max-width: 600px;
+        height: 30%;
+        min-height: 275px;
+        max-height: 450px;
+        display: flex;
+        flex-direction: column;
+        border-radius: 20px;
+        overflow: hidden;
+
+        .PopUpTitle {
+            background: var(--color-imperial-red);
+            color: var(--color-almost-white);
+            padding-left: 10px;
+            padding-right: 10px;
+            flex: 1;
+        }
+
+        .PopUpText {
+            color: var(--color-almost-black);
+            padding-left: 10px;
+            padding-right: 10px;
+            flex: 2;
+        }
+
+        .PopUpButtons {
+            display: flex;
+            flex: 1;
+            background: var(--color-old-rose);
+
+            button {
+                flex: 1;
+                font-size: var(--font-size-medium);
+                background: var(--color-white);
+                margin-top: 2px;
+                margin-left: 1px;
+                margin-right: 1px;
+                border: 0px;
+                cursor: pointer;
+                box-shadow: inset 0 0 15px 2px rgba($color: #c78283, $alpha: 0.5);
+
+            }
+
+            button:hover {
+                box-shadow: inset 0 0 5px 2px rgba(0, 0, 0, 0.3);
+                filter: brightness(0.95);
+            }
+
+            button:active {
+                filter: brightness(0.85);
+            }
+        }
+    }
+
+    .PopUp.GreenPopUp {
+        .PopUpTitle {
+            background: var(--color-midnight-green);
+        }
+
+        .PopUpButtons {
+            background: var(--color-midnight-green);
+
+            button {
+                box-shadow: inset 0 0 15px 2px rgba($color: #074f57, $alpha: 0.5);
+
+            }
+        }
+    }
+}

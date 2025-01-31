@@ -1,0 +1,43 @@
+@import "../../../styles/constants.scss";
+
+.LogoutLink {
+    margin-right: 5px;
+
+    .UserInfo {
+        background: var(--color-white);
+        border: 1px solid var(--color-midnight-green);
+        border-radius: 10px;
+        padding: 25px;
+        display: flex;
+        position: fixed;
+        margin-top: 25px;
+        right: 15px;
+        flex-direction: column;
+        z-index: 2;
+
+        .UserInfoUserName {
+            color: var(--color-midnight-green);
+            text-align: center;
+        }
+    }
+
+    .UserInfo.UserInfoActive {
+        display: flex;
+    }
+
+    .LogoutButton {
+        cursor: pointer;
+        padding: 5px;
+        padding-left: 50px;
+        padding-right: 50px;
+        text-decoration: underline;
+    }
+
+    .LogoutButton:hover {
+        background: var(--color-almost-white);
+    }
+}
+
+.LogoutLink.LogoutLinkDisabled {
+    pointer-events: none;
+}

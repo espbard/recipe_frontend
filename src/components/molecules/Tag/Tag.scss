@@ -1,0 +1,84 @@
+@import "../../../styles/constants.scss";
+
+.TagWrapper {
+    display: flex;
+
+    .TagContainer {
+        background: var(--color-main);
+        padding: 2px;
+        margin: 5px;
+        border-radius: 2px;
+        display: grid;
+        position: relative;
+
+
+        .EditRow {
+            align-items: center;
+            justify-content: center;
+            background: rgba(252, 250, 235, 0.95);
+            border: 2px dotted var(--color-midnight-green);
+            grid-row: 1;
+            grid-column: 1;
+            z-index: 2;
+            justify-content: end;
+            display: none;
+        }
+
+        .EditRowIcon {
+            cursor: pointer;
+            margin-right: 4px;
+        }
+
+        .EditRowIcon:hover {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .EditRow.EditRowActive {
+            display: none !important;
+        }
+
+        .Tag {
+            grid-row: 1;
+            grid-column: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-midnight-green);
+            border: 2px dotted var(--color-midnight-green);
+            border-radius: 2px;
+            padding: 4px;
+            z-index: 1;
+
+            p {
+                margin: 0;
+                padding-left: 5px;
+                padding-right: 5px;
+                font-size: var(--font-size-small);
+            }
+
+            .TagInputRow {
+                display: flex;
+                align-items: center;
+            }
+        }
+
+        .Tag.ExpandedTag {
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        .Tag.ClickableTag {
+            cursor: pointer;
+        }
+
+        .Tag.ClickableTag:hover {
+            background: var(--color-midnight-green);
+            border: 2px dotted var(--color-main);
+            color: var(--color-main);
+        }
+    }
+
+    .TagContainer:hover .EditRow {
+        display: flex;
+    }
+}

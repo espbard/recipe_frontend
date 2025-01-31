@@ -1,0 +1,25 @@
+@import "../../../styles/constants.scss";
+
+.RecipeList {
+    display: flex;
+    flex-direction: column;
+}
+
+.NewRecipeButtonContainer {
+    position: fixed;
+    bottom: 3%;
+    right: 3%;
+    z-index: 3;
+}
+
+.DisabledButton {
+    position: fixed;
+    bottom: 3%;
+    right: 3%;
+    z-index: 3;
+    filter: blur(1px);
+
+    .CustomButton {
+        pointer-events: none;
+    }
+}

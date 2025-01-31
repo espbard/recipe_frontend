@@ -1,0 +1,108 @@
+@import "../../styles/constants.scss";
+
+.LoginPage {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-white);
+
+    .LoginpageContainer {
+        width: 900px;
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 20px;
+        margin-bottom: 20px;
+
+        .LoginTitleContainer {
+            display: flex;
+            color: var(--color-cerulean);
+
+            .LoginTitle {
+                flex: 1;
+                text-align: center;
+                font-size: var(--font-size-xxxlarge);
+            }
+        }
+
+        .LoginRow {
+            display: flex;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+            width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+
+            .LoginSubTitle {
+                color: var(--color-cerulean);
+                font-size: var(--font-size-medium);
+                font-weight: 600;
+                width: 20%;
+                max-width: 20%;
+                min-width: 20%;
+                text-align: end;
+            }
+
+            .LoginInputContainer {
+                width: 70%;
+                max-width: 70%;
+                min-width: 70%;
+                margin-left: 5%;
+                margin-right: 5%;
+            }
+        }
+
+        .CustomButton {
+            margin-left: 15%;
+            margin-right: 15%;
+            border-radius: 6px;
+        }
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    .LoginPage {
+        border-radius: 15px;
+        overflow: hidden;
+
+        .LoginpageContainer {
+            margin: 0;
+
+            .LoginTitleContainer {
+                .LoginTitle {
+                    font-size: var(--font-size-xxlarge);
+                    margin-top: 15px;
+                    margin-bottom: 15px;
+                }
+            }
+
+            .LoginRow {
+                width: 100%;
+                margin-top: 15px;
+                margin-bottom: 0;
+                // align-items: start;
+                flex-direction: column;
+
+                .LoginSubTitle {
+                    margin-left: 20px;
+                    margin-right: 20px;
+                    font-size: var(--font-size-medium);
+                    width: 80%;
+                    text-align: start;
+                    max-width: 80%;
+                }
+
+                .LoginInputContainer {
+                    width: 80%;
+                    max-width: 80%;
+                }
+            }
+
+            .CustomButton {
+                width: 100%;
+                margin: 0;
+                margin-top: auto;
+            }
+        }
+    }
+}
