@@ -7,7 +7,6 @@ import FocusedPopUp from "../../molecules/FocusedPopUp/FocusedPopUp";
 import { useAuth } from "../../../context/AuthContext";
 import Cookies from "js-cookie";
 import { Capitalize } from "../../../common/common";
-import { useAppSelector } from "../../../redux/hooks";
 
 const LogoutLink: React.FC = () => {
   const [userInfoVisible, setUserInfoVisible] = React.useState(false);
@@ -35,9 +34,6 @@ const LogoutLink: React.FC = () => {
   }, []);
 
   const { logout } = useAuth();
-  const sidebarCollapsed = useAppSelector(
-    (state) => state.global.sidebarCollapsed
-  );
 
   const handleLogout = () => {
     logout();
@@ -45,12 +41,8 @@ const LogoutLink: React.FC = () => {
     window.location.reload();
   };
 
-  const logoutClasses = classNames("LogoutLink", {
-    LogoutLinkDisabled: !sidebarCollapsed,
-  });
-
   return (
-    <div className={logoutClasses}>
+    <div className="LogoutLink">
       <UserIcon callBack={handleIconPressed} />
       <FocusedPopUp
         onClickOutside={() => closeUserInfo()}

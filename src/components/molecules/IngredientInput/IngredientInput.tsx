@@ -11,6 +11,7 @@ interface IngredientProps {
   onChangeUnit: (index: number, unit: string) => void;
   onChangeName: (index: number, name: string) => void;
   remove: (index: number) => void;
+  onEnter?: () => void;
 }
 
 export class IngredientInput extends Component<IngredientProps> {
@@ -45,6 +46,11 @@ export class IngredientInput extends Component<IngredientProps> {
           value={this.props.name}
           onChange={(e) => {
             this.props.onChangeName(this.props.id, e.target.value);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              this.props.onEnter && this.props.onEnter();
+            }
           }}
         />
         <div className="NewRecipeIngredientButtons">

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import Home from "../pages/home/Home";
-import Register from "../pages/register/Register";
 import Login from "../pages/login/Login";
 import Recipe from "../pages/recipe/Recipe";
 import EditRecipe from "../pages/edit_recipe/EditRecipe";
@@ -9,20 +8,23 @@ import { AuthProvider } from "../context/AuthContext";
 import Cookies from "js-cookie";
 
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
-  const [userId, setUserId] = useState(-1);
+  const [userId, setUserId] = useState<number | null>(null);
 
   useEffect(() => {
     const idCookie = Cookies.get("id");
     if (idCookie) {
       setUserId(parseInt(idCookie));
+    } else {
+      setUserId(-1); // Explicitly set to -1 if no cookie is found
     }
   }, []);
 
-  return userId === undefined || userId === null || userId < 0 ? (
-    <Login />
-  ) : (
-    children
-  );
+  // Avoid rendering children until userId is determined
+  if (userId === null) {
+    return <div>Loading...</div>; // Or a loading spinner
+  }
+
+  return userId < 0 ? <Login /> : children;
 };
 
 const LoginRoute = () => {
@@ -53,14 +55,6 @@ const AppRoutes = () => {
             element={
               <ProtectedRoute>
                 <Home />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <ProtectedRoute>
-                <Register />
               </ProtectedRoute>
             }
           />

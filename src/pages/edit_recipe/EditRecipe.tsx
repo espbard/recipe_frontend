@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import PageTemplate from "../../components/templates/PageTemplate/PageTemplate";
 import { CustomButton } from "../../components/atoms/CustomButton/CustomButton";
 import { IngredientInput } from "../../components/molecules/IngredientInput/IngredientInput";
@@ -6,13 +6,17 @@ import { InstructionInput } from "../../components/molecules/InstructionInput/In
 import ServerIface from "../../ServerIface";
 import "./EditRecipe.scss";
 import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { PopUp } from "../../components/molecules/PopUp/PopUp";
 import { Tag } from "../../components/molecules/Tag/Tag";
 import classNames from "classnames";
-import { AutocompleteOption, Ingredient } from "../../common/common";
+import {
+  AutocompleteOption,
+  Ingredient,
+  PopUpFunctions,
+} from "../../common/common";
 import { Icon } from "../../common/common";
 import Cookies from "js-cookie";
+import { useDispatch } from "react-redux";
+import { setPopup } from "../../redux/globalSlice";
 
 interface RecipeIface {
   id: number;
@@ -44,13 +48,13 @@ interface FormErrorsIface {
 }
 
 const EditRecipe: React.FC = () => {
-  const [newRecipeId, set_newRecipeId] = useState<number>(-1);
-  const [result, set_result] = useState<boolean>(false);
+  const [result, set_result] = useState<boolean>(true);
   const [isPostRequest, set_isPostRequest] = useState<boolean>(false);
-  const [resultPopUpVisible, set_resultPopUpVisible] = useState<boolean>(false);
   const [image, set_image] = useState<File | null>(null);
   const [originalImageName, set_originalImageName] = useState<string>("");
   const [allTags, set_allTags] = useState<AutocompleteOption[]>([]);
+  const [moveToNextIngredient, setMoveToNextIngredient] = useState(false);
+  const [moveToNextInstruction, setMoveToNextInstruction] = useState(false);
   const [selectedTags, set_selectedTags] = useState<AutocompleteOption[]>([]);
   const [recipe, set_recipe] = useState<RecipeIface>({
     id: 0,
@@ -77,13 +81,15 @@ const EditRecipe: React.FC = () => {
   });
 
   const { id } = useParams();
-  const navigate = useNavigate();
 
   const format_image_name = (name: string) => {
     if (name === undefined) {
       return "";
     }
     let file_name_split = name.split(".");
+    if (file_name_split.length < 2) {
+      return "";
+    }
     let file_name = "";
     let extension = file_name_split[file_name_split.length - 1];
 
@@ -105,6 +111,7 @@ const EditRecipe: React.FC = () => {
       const iface = new ServerIface();
       const search_id = id ? id.toLocaleString() : "-1";
       const recipe_data = await iface.get_search("recipe", search_id);
+
       if (recipe_data === undefined) {
         return;
       }
@@ -113,7 +120,7 @@ const EditRecipe: React.FC = () => {
       let recipe: RecipeIface = {
         id: respose.id,
         title: respose.title,
-        description: respose.description,
+        description: respose.description.replace(/\\n/g, "\n"),
         created_at: respose.created_at,
         updated_at: respose.updated_at,
         instructions: [],
@@ -123,6 +130,8 @@ const EditRecipe: React.FC = () => {
         tags: [],
         portions: respose.portions ? respose.portions : 2,
       };
+
+      set_image(respose.image);
 
       if (originalImageName === "") {
         set_originalImageName(recipe.image);
@@ -212,28 +221,7 @@ const EditRecipe: React.FC = () => {
     }
     let recipe_cpy = { ...recipe, image: format_image_name(recipe.image) };
     set_recipe(recipe_cpy);
-  }, [recipe.user_id, id, originalImageName]);
-
-  // const ref = useRef(null);
-
-  // useEffect(() => {
-  //   if (ref?.current) {
-  //     if (formErrors.title_error.is_err) {
-  //       ref.current.focus();
-  //     }
-  //   }
-  // }, [ref, formErrors]);
-
-  // const [inputRef, setInputFocus] = useFocus();
-
-  // const useFocus = () => {
-  //   const htmlElRef = useRef(null);
-  //   const setFocus = () => {
-  //     htmlElRef.current && htmlElRef.current.focus();
-  //   };
-
-  //   return [htmlElRef, setFocus];
-  // };
+  }, [recipe.id, id, originalImageName]);
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -268,7 +256,7 @@ const EditRecipe: React.FC = () => {
     };
 
     fetchTags();
-  }, [recipe.tags, selectedTags]);
+  }, [recipe.tags, recipe.id, selectedTags]);
 
   const update_ingredient_quantity = (index: number, quantity: number) => {
     const new_ingredients = [...recipe.ingredients];
@@ -292,17 +280,55 @@ const EditRecipe: React.FC = () => {
     set_recipe({ ...recipe, instructions: new_instructions });
   };
 
-  const add_ingredient = () => {
+  const add_ingredient = (moveToNextIngredient?: boolean) => {
+    if (recipe.ingredients[recipe.ingredients.length - 1].name === "") {
+      return;
+    }
     const new_ingredients = [...recipe.ingredients];
     new_ingredients.push({ name: "", quantity: 0, unit: "" });
     set_recipe({ ...recipe, ingredients: new_ingredients });
+
+    if (moveToNextIngredient) {
+      setMoveToNextIngredient(true);
+    }
   };
 
-  const add_instruction = () => {
+  const add_instruction = (moveToNextInstruction?: boolean) => {
+    if (recipe.instructions[recipe.instructions.length - 1] === "") {
+      return;
+    }
     const new_instructions = [...recipe.instructions];
     new_instructions.push("");
     set_recipe({ ...recipe, instructions: new_instructions });
+
+    if (moveToNextInstruction) {
+      setMoveToNextInstruction(true);
+    }
   };
+
+  useEffect(() => {
+    if (moveToNextIngredient) {
+      setTimeout(() => {
+        const newIngredientInput = document.querySelectorAll<HTMLInputElement>(
+          ".RecipeIngredientRow input"
+        )[recipe.ingredients.length * 3 - 3]; // Assuming 3 inputs per ingredient row
+        newIngredientInput?.focus();
+      }, 0);
+    }
+    setMoveToNextIngredient(false);
+  }, [recipe.ingredients, moveToNextIngredient]);
+
+  useEffect(() => {
+    if (moveToNextInstruction) {
+      setTimeout(() => {
+        const newInstructionInput = document.querySelectorAll<HTMLInputElement>(
+          ".RecipeInstructionRow input"
+        )[recipe.instructions.length - 1];
+        newInstructionInput?.focus();
+      }, 0);
+    }
+    setMoveToNextInstruction(false);
+  }, [recipe.instructions, moveToNextInstruction]);
 
   const remove_ingredient = (index: number) => {
     const new_ingredients = [...recipe.ingredients];
@@ -397,6 +423,34 @@ const EditRecipe: React.FC = () => {
     }
   };
 
+  const dispatch = useDispatch();
+
+  const openPopUp = (newId?: number) => {
+    const message = result
+      ? `Successfully ${isPostRequest ? "created" : "updated"} recipe!`
+      : `Failed to ${isPostRequest ? "create" : "update"} recipe!`;
+    dispatch(
+      setPopup({
+        open: true,
+        isError: !result,
+        message: message,
+        singleButton: result,
+        title: !result
+          ? "Error"
+          : isPostRequest
+          ? "Recipe created"
+          : "Recipe updated",
+        leftButtonText: result ? "Ok" : "Reload",
+        rightButtonText: result ? "" : "Cancel",
+        onClickLeft: result
+          ? PopUpFunctions.GO_TO_RECIPE
+          : PopUpFunctions.RELOAD,
+        onClickRight: result ? PopUpFunctions.CLOSE : PopUpFunctions.HOME,
+        id: id ? parseInt(id) : newId ? newId : -1,
+      })
+    );
+  };
+
   const submitEditRecipe = () => {
     let recipe_to_post = {
       title: recipe.title,
@@ -419,10 +473,11 @@ const EditRecipe: React.FC = () => {
         let image_name = format_image_name(image.name);
         set_originalImageName(image_name);
         recipe_to_post.image = image_name;
-        let res = serverIface.uploadImage(image!);
+        let image_cpy = new File([image], image_name, { type: image.type });
+        set_image(image_cpy);
+        let res = serverIface.uploadImage(image_cpy);
 
         res.then((res) => {
-          console.log("Result: ", res);
           if (res.success) {
             recipe_to_post.image = res.message;
           }
@@ -431,14 +486,13 @@ const EditRecipe: React.FC = () => {
     }
 
     if (id !== undefined) {
-      recipe_to_post.image = recipe_to_post.image;
       let res = serverIface.put_recipe(recipe_to_post, id);
 
       res.then((res) => {
         set_isPostRequest(false);
         if (res !== undefined && res.res.success) {
           set_result(true);
-          set_resultPopUpVisible(true);
+          openPopUp();
         } else {
           set_result(false);
         }
@@ -446,55 +500,64 @@ const EditRecipe: React.FC = () => {
     }
   };
 
-  const submitNewRecipe = () => {
-    // console.log("submitNewRecipe");
-    // // let id = Cookies.get("id");
-    // // let recipe_to_post = {
-    // //   user_id: id && id !== undefined ? parseInt(id) : -1,
-    // //   title: recipe.title,
-    // //   description: recipe.description,
-    // //   instructions: recipe.instructions,
-    // //   ingredients: recipe.ingredients,
-    // //   image: "",
-    // //   tags: recipe.tags,
-    // //   portions: recipe.portions,
-    // // };
-    // // for (let i = 0; i < recipe_to_post.tags.length; i++) {
-    // //   recipe_to_post.tags[i] = recipe_to_post.tags[i].toLowerCase();
-    // // }
-    // const serverIface = new ServerIface();
-    // if (image !== null) {
-    //   // recipe_to_post.image = image.name;
-    //   let res = serverIface.uploadImage(image!);
-    //   res.then((res) => {
-    //     console.log("Result: " + res);
-    //     // if (res.success) {
-    //     //   recipe_to_post.image = res.message;
-    //     // }
-    //   });
-    // }
-    // // let res = serverIface.post_recipe(recipe_to_post);
-    // // res.then((res) => {
-    // //   set_isPostRequest(false);
-    // //   if (res.success) {
-    // //     set_newRecipeId(res.id);
-    // //     set_result(true);
-    // //     set_resultPopUpVisible(true);
-    // //   } else {
-    // //     set_result(false);
-    // //   }
-    // // });
-  };
-
-  const onCloseButtonPressed = () => {
-    if (result) {
-      if (id) {
-        navigate("/recipe/" + id);
-      } else {
-        navigate("/recipe/" + newRecipeId);
-      }
+  const submitNewRecipe = async () => {
+    let id = Cookies.get("id");
+    let recipe_to_post = {
+      user_id: id && id !== undefined ? parseInt(id) : -1,
+      title: recipe.title,
+      description: recipe.description,
+      instructions: recipe.instructions,
+      ingredients: recipe.ingredients,
+      image: "",
+      tags: recipe.tags,
+      portions: recipe.portions,
+    };
+    for (let i = 0; i < recipe_to_post.tags.length; i++) {
+      recipe_to_post.tags[i] = recipe_to_post.tags[i].toLowerCase();
     }
-    set_resultPopUpVisible(false);
+    const serverIface = new ServerIface();
+    if (image !== null) {
+      let img_cpy = new File([image], format_image_name(image.name), {
+        type: image.type,
+      });
+      set_image(img_cpy);
+      let img_res = serverIface.uploadImage(img_cpy);
+
+      img_res.then((img_res) => {
+        // console.log(img_res);
+        if (img_res.success) {
+          recipe_to_post.image = img_res.message;
+        } else {
+          console.log(result);
+          set_result(false);
+          return;
+        }
+        let res = serverIface.post_recipe(recipe_to_post);
+        res.then((result) => {
+          set_isPostRequest(false);
+          if (result.id > 0) {
+            set_result(true);
+            openPopUp(result.id);
+          } else {
+            console.log(result);
+            set_result(false);
+          }
+        });
+      });
+    } else {
+      let res = serverIface.post_recipe(recipe_to_post);
+
+      res.then((result) => {
+        set_isPostRequest(false);
+        if (result.id > 0) {
+          set_result(true);
+          openPopUp(result.id);
+        } else {
+          console.log(result);
+          set_result(false);
+        }
+      });
+    }
   };
 
   const TagsContainerClasses = classNames("TagsContainer", {
@@ -505,189 +568,184 @@ const EditRecipe: React.FC = () => {
     <PageTemplate
       content={
         <div id="EditRecipePage">
-          {resultPopUpVisible && (
-            <PopUp
-              title={isPostRequest ? "Create recipe" : "Update recipe"}
-              text={
-                result
-                  ? `Successfully ${
-                      isPostRequest ? "created" : "updated"
-                    } recipe!`
-                  : `Failed to ${isPostRequest ? "create" : "update"} recipe!`
-              }
-              singleButton={true}
-              leftButtonText="Close"
-              color={result ? "green" : "red"}
-              onClickLeft={() => onCloseButtonPressed()}
-            />
-          )}
-          <h1>{id ? "Edit Recipe" : "New Recipe"}</h1>
-          <div className="EditRecipeRow">
-            <div
-              className="EditRecipeLabel"
-              // ref={(input) => {
-              //   this.nameInput = input;
-              // }}
-            >
-              <p className="EditRecipeLabelText">
-                Title:
-                {formErrors.title_error.is_err && (
-                  <p className="ErrorText" id="TitleError">
-                    Please provide title
-                  </p>
-                )}
-              </p>
-            </div>
-            <input
-              value={recipe.title}
-              onChange={(e) => set_recipe({ ...recipe, title: e.target.value })}
-              placeholder="Name of recipe..."
-              className="EditRecipeInput"
-            />
+          <div id="EditRecipeHeader">
+            <h1>{id ? "Edit Recipe" : "New Recipe"}</h1>
           </div>
-          <div className="EditRecipeRow">
-            <div className="EditRecipeLabel">Image:</div>
-            <div className="EditRecipeInput">
-              <label htmlFor="files" className="UploadImageButton">
-                {recipe.image.length > 0 ? "Change image" : "Upload image"}
-              </label>
+          <div id="EditRecipeForm">
+            <div className="EditRecipeRow">
+              <div className="EditRecipeLabel">
+                <p className="EditRecipeLabelText">
+                  Title:
+                  {formErrors.title_error.is_err && (
+                    <p className="ErrorText" id="TitleError">
+                      Please provide title
+                    </p>
+                  )}
+                </p>
+              </div>
               <input
-                id="files"
-                style={{ display: "none" }}
-                accept="image/png, image/jpeg"
-                type="file"
+                value={recipe.title}
                 onChange={(e) => {
-                  set_image(e.target.files![0]);
-                  set_recipe({
-                    ...recipe,
-                    image: format_image_name(e.target.files![0].name),
-                  });
+                  if (formErrors.title_error.is_err) {
+                    let title_error: FormError = {
+                      is_err: false,
+                      message: "",
+                    };
+                    set_formErrors({ ...formErrors, title_error });
+                  }
+                  set_recipe({ ...recipe, title: e.target.value });
                 }}
-              />
-              <div className="EditRecipeImageText">
-                <h6>{recipe.image}</h6>
-              </div>
-            </div>
-          </div>
-          <div className="EditRecipeRow">
-            <div className="EditRecipeLabel">Description:</div>
-            <textarea
-              value={recipe.description}
-              onChange={(e) =>
-                set_recipe({ ...recipe, description: e.target.value })
-              }
-              placeholder="Description..."
-              className="EditRecipeInput"
-            />
-          </div>
-          <div className="EditRecipeRow">
-            <div className="EditRecipeLabel">Ingredients:</div>
-            <div className="EditRecipeInput">
-              <div className="RecipeIngredientRow">
-                {recipe.ingredients.map((ingredient, id) => (
-                  <IngredientInput
-                    key={id}
-                    name={ingredient.name}
-                    quantity={ingredient.quantity}
-                    unit={ingredient.unit}
-                    id={id}
-                    onChangeQuantity={update_ingredient_quantity}
-                    onChangeUnit={update_ingredient_unit}
-                    onChangeName={update_ingredient_name}
-                    remove={remove_ingredient}
-                  />
-                ))}
-                <div className="AddButtonContainer">
-                  <CustomButton
-                    label={Icon.Add}
-                    onClick={() => add_ingredient()}
-                    color="white"
-                    inverted
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="EditRecipeRow">
-            <div className="EditRecipeLabel">Instructions:</div>
-            <div className="EditRecipeInput">
-              <ol>
-                {recipe.instructions.map((instruction, id) => (
-                  <InstructionInput
-                    key={id}
-                    text={instruction}
-                    id={id}
-                    onChange={update_instruction}
-                    remove={remove_instruction}
-                    move={move_instruction}
-                  />
-                ))}
-                <div className="AddButtonContainer">
-                  <CustomButton
-                    label={Icon.Add}
-                    onClick={() => add_instruction()}
-                    color="white"
-                    inverted
-                  />
-                </div>
-              </ol>
-            </div>
-          </div>
-          <div className="EditRecipeRow">
-            <div className="EditRecipeLabel">Serves:</div>
-            <div className="EditRecipePortionsInputContainer">
-              <input
-                type="number"
-                min={1}
-                max={99}
-                value={recipe.portions}
-                onChange={(e) =>
-                  set_recipe({ ...recipe, portions: parseInt(e.target.value) })
-                }
                 placeholder="Name of recipe..."
-                className="EditRecipePortionsInput"
-              />
-              <CustomButton
-                label={Icon.ChevronUp}
-                onClick={() =>
-                  recipe.portions < 99 &&
-                  set_recipe({ ...recipe, portions: recipe.portions + 1 })
-                }
-              />
-              <CustomButton
-                label={Icon.ChevronDown}
-                onClick={() =>
-                  recipe.portions > 1 &&
-                  set_recipe({ ...recipe, portions: recipe.portions - 1 })
-                }
+                className="EditRecipeInput"
               />
             </div>
-          </div>
-          <div className="EditRecipeRow">
-            <div className="EditRecipeLabel">Tags:</div>
-            <div className={TagsContainerClasses}>
-              {recipe.tags.map((tag, id) => {
-                return (
-                  <Tag
-                    key={id}
-                    id={id}
-                    text={tag}
-                    editable
-                    onDelete={() => remove_tag(id)}
-                    onSave={save_tag}
-                    allTags={allTags}
+            <div className="EditRecipeRow">
+              <div className="EditRecipeLabel">Image:</div>
+              <div className="EditRecipeInput">
+                <div className="EditRecipeImage">
+                  <div className="EditRecipeImageText">
+                    <h6>{recipe.image}</h6>
+                  </div>
+                  <label htmlFor="files" className="UploadImageButton">
+                    {recipe.image.length > 0 ? "Change image" : "Upload image"}
+                  </label>
+                  <input
+                    id="files"
+                    style={{ display: "none" }}
+                    accept="image/png, image/jpeg"
+                    type="file"
+                    onChange={(e) => {
+                      set_image(e.target.files![0]);
+                      set_recipe({
+                        ...recipe,
+                        image: format_image_name(e.target.files![0].name),
+                      });
+                    }}
                   />
-                );
-              })}
-              <div className="AddButtonContainer">
+                </div>
+              </div>
+            </div>
+            <div className="EditRecipeRow">
+              <div className="EditRecipeLabel">Description:</div>
+              <textarea
+                value={recipe.description}
+                onChange={(e) =>
+                  set_recipe({ ...recipe, description: e.target.value })
+                }
+                placeholder="Description..."
+                className="EditRecipeInput"
+              />
+            </div>
+            <div className="EditRecipeRow">
+              <div className="EditRecipeLabel">Ingredients:</div>
+              <div className="EditRecipeInput">
+                <div className="RecipeIngredientRow">
+                  {recipe.ingredients.map((ingredient, id) => (
+                    <IngredientInput
+                      key={id}
+                      name={ingredient.name}
+                      quantity={ingredient.quantity}
+                      unit={ingredient.unit}
+                      id={id}
+                      onChangeQuantity={update_ingredient_quantity}
+                      onChangeUnit={update_ingredient_unit}
+                      onChangeName={update_ingredient_name}
+                      remove={remove_ingredient}
+                      onEnter={() => add_ingredient(true)}
+                    />
+                  ))}
+                  <div className="AddButtonContainer">
+                    <CustomButton
+                      label={Icon.Add}
+                      onClick={() => add_ingredient()}
+                      color="white"
+                      inverted
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="EditRecipeRow">
+              <div className="EditRecipeLabel">Instructions:</div>
+              <div className="EditRecipeInput">
+                <ol className="RecipeInstructionRow">
+                  {recipe.instructions.map((instruction, id) => (
+                    <InstructionInput
+                      key={id}
+                      text={instruction}
+                      id={id}
+                      onChange={update_instruction}
+                      remove={remove_instruction}
+                      move={move_instruction}
+                      onEnter={() => add_instruction(true)}
+                    />
+                  ))}
+                  <div className="AddButtonContainer">
+                    <CustomButton
+                      label={Icon.Add}
+                      onClick={() => add_instruction()}
+                      color="white"
+                      inverted
+                    />
+                  </div>
+                </ol>
+              </div>
+            </div>
+            <div className="EditRecipeRow">
+              <div className="EditRecipeLabel">Serves:</div>
+              <div className="EditRecipePortionsInputContainer">
+                <input
+                  type="number"
+                  min={1}
+                  max={99}
+                  value={recipe.portions}
+                  onChange={(e) =>
+                    set_recipe({
+                      ...recipe,
+                      portions: parseInt(e.target.value),
+                    })
+                  }
+                  placeholder="Name of recipe..."
+                  className="EditRecipePortionsInput"
+                />
+                <CustomButton
+                  label={Icon.ChevronUp}
+                  onClick={() =>
+                    recipe.portions < 99 &&
+                    set_recipe({ ...recipe, portions: recipe.portions + 1 })
+                  }
+                />
+                <CustomButton
+                  label={Icon.ChevronDown}
+                  onClick={() =>
+                    recipe.portions > 1 &&
+                    set_recipe({ ...recipe, portions: recipe.portions - 1 })
+                  }
+                />
+              </div>
+            </div>
+            <div className="EditRecipeRow">
+              <div className="EditRecipeLabel">Tags:</div>
+              <div className={TagsContainerClasses}>
+                {recipe.tags.map((tag, id) => {
+                  return (
+                    <Tag
+                      key={id}
+                      id={id}
+                      text={tag}
+                      editable
+                      onDelete={() => remove_tag(id)}
+                      onSave={save_tag}
+                      allTags={allTags}
+                    />
+                  );
+                })}
                 <Tag text={Icon.Add} onAdd={() => add_tag()} noSymbol />
               </div>
             </div>
           </div>
-          <div className="WhiteRow">
-            <div className="SaveButtonContainer">
-              <CustomButton label="Save" onClick={onSaveButtonPressed} />
-            </div>
+          <div className="SaveButtonContainer">
+            <CustomButton label="Save" onClick={onSaveButtonPressed} />
           </div>
         </div>
       }

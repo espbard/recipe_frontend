@@ -5,10 +5,16 @@ import { useNavigate } from "react-router-dom";
 import ServerIface from "../../ServerIface";
 import "./Recipe.scss";
 import { CustomButton } from "../../components/atoms/CustomButton/CustomButton";
-import { PopUp } from "../../components/molecules/PopUp/PopUp";
 import missing_picture_placeholder from "../../assets/images/missing_picture_placeholder.png";
 import { Tag } from "../../components/molecules/Tag/Tag";
-import { Ingredient, Icon, Capitalize } from "../../common/common";
+import {
+  Ingredient,
+  Icon,
+  Capitalize,
+  PopUpFunctions,
+} from "../../common/common";
+import { useAppDispatch } from "../../redux/hooks";
+import { setPopup } from "../../redux/globalSlice";
 
 interface RecipeIface {
   id: number;
@@ -60,15 +66,16 @@ const Recipe: React.FC = () => {
   const [originalPortions, setOriginalPortions] = useState<number>(0);
   const [activePortions, setActivePortions] = useState<number>(0);
   const [imageBase64, setImageBase64] = useState<string>("");
-  const [deletePopUpVisble, setDeletePopUpVisble] = useState<boolean>(false);
+  const [description, setDescription] = useState<string>("");
   const { id } = useParams();
+  const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRecipe = async () => {
       const iface = new ServerIface();
-      const recipe_data = await iface.get("recipes/" + id);
+      const recipe_data = await iface.get_search("recipe", id ? id : "0");
       if (recipe_data === undefined) {
         return;
       }
@@ -186,8 +193,19 @@ const Recipe: React.FC = () => {
     fetchAuthor();
   }, [recipe.user_id, id]);
 
-  const toggleDeletePopUp = () => {
-    setDeletePopUpVisble(!deletePopUpVisble);
+  const openDeletePopUp = () => {
+    dispatch(
+      setPopup({
+        open: true,
+        isError: false,
+        message: "Are you sure you want to delete this recipe?",
+        title: "Delete recipe",
+        leftButtonText: "Yes",
+        rightButtonText: "Cancel",
+        onClickLeft: PopUpFunctions.DELETE_FUNCTION,
+        id: recipe.id,
+      })
+    );
   };
 
   const getIngredientMultiplier = () => {
@@ -202,152 +220,145 @@ const Recipe: React.FC = () => {
     return Math.round(multiplied_num * 100) / 100;
   };
 
-  const deleteRecipe = async () => {
-    const iface = new ServerIface();
-    const data = await iface.delete("recipes/" + id);
-    if (data === undefined) {
-      return;
+  useEffect(() => {
+    if (recipe.description.length !== 0) {
+      setDescription(recipe.description.replace(/\\n/g, "\n"));
     }
-    setDeletePopUpVisble(false);
-    navigate("/");
-  };
+  }, [recipe.description]);
 
   return (
     <PageTemplate
       content={
-        <div className="RecipeContainer">
-          {deletePopUpVisble && (
-            <PopUp
-              title="Delete Recipe"
-              text="Are you sure you want to delete this recipe?"
-              leftButtonText="Delete"
-              rightButtonText="Cancel"
-              onClickLeft={deleteRecipe}
-              onClickRight={toggleDeletePopUp}
-            />
-          )}
-
-          <div className="RecipeImageContainer">
-            {imageBase64.length > 0 ? (
-              <img src={`data:image/jpg;base64,${imageBase64}`} alt="Recipe" />
-            ) : (
-              <img src={missing_picture_placeholder} alt="Recipe" />
-            )}
-          </div>
-          <div className="Recipe">
-            <div className="RecipeRow" id="RecipeTitleContainer">
-              <div className="RecipeTitle">
-                <h3>
-                  {recipe.title.charAt(0).toUpperCase() +
-                    recipe.title.slice(1).toLocaleLowerCase()}
-                </h3>
-              </div>
+        <div id="RecipePage">
+          <div className="RecipeContainer">
+            <div className="RecipeImageContainer">
+              {imageBase64.length > 0 ? (
+                <img
+                  src={`data:image/jpg;base64,${imageBase64}`}
+                  alt="Recipe"
+                />
+              ) : (
+                <img src={missing_picture_placeholder} alt="Recipe" />
+              )}
             </div>
+            <div className="Recipe">
+              <div className="RecipeRow" id="RecipeTitleContainer">
+                <div className="RecipeTitle">
+                  <h3>
+                    {recipe.title.charAt(0).toUpperCase() +
+                      recipe.title.slice(1).toLocaleLowerCase()}
+                  </h3>
+                </div>
+              </div>
 
-            <div className="RecipeRow">
-              <div className="PortionsContainer">
-                <h4 className="PortionsLabel">Serves:</h4>
-                <h2 className="Portions">{activePortions}</h2>
-                <div className="PortionsButtonsContainer">
-                  <div className="PortionsButtonContainer">
-                    <CustomButton
-                      label={Icon.ChevronUp}
-                      onClick={() => {
-                        activePortions < 99 &&
-                          setActivePortions(activePortions + 1);
-                      }}
-                      size="xsmall"
-                    />
-                  </div>
-                  <div className="PortionsButtonContainer">
-                    <CustomButton
-                      label={Icon.ChevronDown}
-                      onClick={() => {
-                        activePortions > 1 &&
-                          setActivePortions(activePortions - 1);
-                      }}
-                      size="xsmall"
-                    />
+              <div className="RecipeRow">
+                <div className="PortionsContainer">
+                  <h4 className="PortionsLabel">Serves:</h4>
+                  <h2 className="Portions">{activePortions}</h2>
+                  <div className="PortionsButtonsContainer">
+                    <div className="PortionsButtonContainer">
+                      <CustomButton
+                        label={Icon.ChevronUp}
+                        onClick={() => {
+                          activePortions < 99 &&
+                            setActivePortions(activePortions + 1);
+                        }}
+                        size="xsmall"
+                      />
+                    </div>
+                    <div className="PortionsButtonContainer">
+                      <CustomButton
+                        label={Icon.ChevronDown}
+                        onClick={() => {
+                          activePortions > 1 &&
+                            setActivePortions(activePortions - 1);
+                        }}
+                        size="xsmall"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="RecipeTitleUnderLine" />
-            <div className="RecipeRow" id="RecipeDescriptionContainer">
-              <div>
-                <h4 className="RecipeSubTitle">Description:</h4>
-                <h6 className="RecipeDescription">{recipe.description}</h6>
-              </div>
-            </div>
-            <div className="RecipeRow" id="RecipIngredientsContainer">
-              <div>
-                <h4 className="RecipeSubTitle">Ingredients:</h4>
+              <div className="RecipeTitleUnderLine" />
+              <div className="RecipeRow" id="RecipeDescriptionContainer">
                 <div>
-                  <div className="RecipeIngredients">
-                    <ul>
-                      {recipe.ingredients.map((ingredient) => {
-                        return (
-                          <li key={ingredient.name}>
-                            {getMultipliedIngredients(ingredient.quantity)}{" "}
-                            {ingredient.unit} {Capitalize(ingredient.name)}
-                          </li>
-                        );
-                      })}
-                    </ul>
+                  <h4 className="RecipeSubTitle">Description:</h4>
+                  <h6 className="RecipeDescription">{description}</h6>
+                </div>
+              </div>
+              <div className="RecipeRow" id="RecipIngredientsContainer">
+                <div>
+                  <h4 className="RecipeSubTitle">Ingredients:</h4>
+                  <div>
+                    <div className="RecipeIngredients">
+                      <ul>
+                        {recipe.ingredients.map((ingredient) => {
+                          return (
+                            <li key={ingredient.name}>
+                              {getMultipliedIngredients(ingredient.quantity)}{" "}
+                              {ingredient.unit} {Capitalize(ingredient.name)}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="RecipeRow" id="RecipInstructionsContainer">
-              <h4 className="RecipeSubTitle">Instructions:</h4>
-              <ol className="RecipeInstructions">
-                {recipe.instructions.map((instruction) => {
-                  return <li key={instruction}>{Capitalize(instruction)}</li>;
-                })}
-              </ol>
-            </div>
-            <div className="RecipeRow" id="RecipInstructionsContainer">
-              <div className="TagsContainer">
-                {recipe.tags.map((tag) => (
-                  <Tag key={tag} id={0} text={tag} />
-                ))}
+              <div className="RecipeRow" id="RecipInstructionsContainer">
+                <h4 className="RecipeSubTitle">Instructions:</h4>
+                <ol className="RecipeInstructions">
+                  {recipe.instructions.map((instruction) => {
+                    return <li key={instruction}>{Capitalize(instruction)}</li>;
+                  })}
+                </ol>
+              </div>
+              <div className="RecipeRow" id="RecipInstructionsContainer">
+                <div className="TagsContainer">
+                  {recipe.tags.map((tag) => (
+                    <Tag key={tag} id={0} text={tag} />
+                  ))}
+                </div>
+              </div>
+              <div id="RecipeInfoContainer">
+                <div className="RecipeInfo">
+                  <p>Uploaded by: </p>
+                  <p>{Capitalize(author)}</p>
+                </div>
+                <div
+                  className="RecipeInfo"
+                  style={{ justifyContent: "center" }}
+                >
+                  <p>Last updated: </p>
+                  <p>{FormatDate(recipe.updated_at)}</p>
+                </div>
+                <div
+                  className="RecipeInfo"
+                  style={{ justifyContent: "flex-end" }}
+                >
+                  <p>Created: </p>
+                  <p>{FormatDate(recipe.created_at)}</p>
+                </div>
               </div>
             </div>
-            <div id="RecipeInfoContainer">
-              <div className="RecipeInfo">
-                <p>Uploaded by: </p>
-                <p>{Capitalize(author)}</p>
+            <div className="RecipeButtonsContainer">
+              <div className="OneHalf">
+                <CustomButton
+                  onClick={() => {
+                    navigate("/recipe/edit/" + id);
+                  }}
+                  label={Icon.Edit}
+                />
               </div>
-              <div className="RecipeInfo" style={{ justifyContent: "center" }}>
-                <p>Last updated: </p>
-                <p>{FormatDate(recipe.updated_at)}</p>
+              <div className="OneHalf">
+                <CustomButton
+                  onClick={openDeletePopUp}
+                  label={Icon.Delete}
+                  background="red"
+                  color="almost-white"
+                />
               </div>
-              <div
-                className="RecipeInfo"
-                style={{ justifyContent: "flex-end" }}
-              >
-                <p>Created: </p>
-                <p>{FormatDate(recipe.created_at)}</p>
-              </div>
-            </div>
-          </div>
-          <div className="RecipeButtonsContainer">
-            <div className="OneHalf">
-              <CustomButton
-                onClick={() => {
-                  navigate("/recipe/edit/" + id);
-                }}
-                label={Icon.Edit}
-              />
-            </div>
-            <div className="OneHalf">
-              <CustomButton
-                onClick={toggleDeletePopUp}
-                label={Icon.Delete}
-                background="red"
-                color="almost-white"
-              />
             </div>
           </div>
         </div>

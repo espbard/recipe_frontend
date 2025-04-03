@@ -1,62 +1,70 @@
 @import "../../../styles/constants.scss";
 
-
-.PageContent {
+#PageTemplate {
     display: flex;
+    flex: 1;
     position: absolute;
-    top: 0;
-    left: 80px;
-    max-height: 100%;
-    overflow: hidden;
-    z-index: 1;
-    flex-direction: column;
-    width: calc(100% - 80px);
-    background: var(--color-almost-white);
-
-    #MainContent {
-        height: 100%;
-        overflow: auto;
-        padding: 35px;
-    }
-}
-
-.PageContent.DisableSideBar {
-    left: 0px;
+    height: 100%;
     width: 100%;
+
+    #PageContent {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+
+        #MainContent {
+            padding-top: 25px;
+            height: 100%;
+            width: 100%;
+            background: var(--color-almost-white);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        // #MainContent>div {
+        //     flex: 1;
+        //     margin-left: 15px;
+        //     margin-right: 15px;
+        //     margin-top: 20px;
+        //     margin-bottom: 20px;
+        //     border-radius: 12px;
+        //     overflow: hidden;
+        //     // box-shadow: 4px 4px 14px rgba(0, 0, 0, 0.05),
+        //     //     4px -4px 14px rgba(0, 0, 0, 0.05),
+        //     //     -4px 4px 14px rgba(0, 0, 0, 0.05),
+        //     //     -4px -4px 14px rgba(0, 0, 0, 0.05);
+        // }
+    }
 }
 
 #LoadingPopUp {
     position: absolute;
+    width: 100%;
+    height: 100%;
     z-index: 10;
-    top: 14%;
-    left: calc(50%);
+    background: rgba($color: #000000, $alpha: 0.2);
     display: flex;
+    justify-content: center;
 
-    .loader {
+    .LoadIcon {
         width: 80px;
-        aspect-ratio: 1;
+        height: 80px;
         border-radius: 50%;
         background:
             radial-gradient(farthest-side, #074f57 94%, #0000) top/12px 12px no-repeat,
             conic-gradient(#0000 50%, #074f57);
+        mask: radial-gradient(farthest-side, #0000 calc(100% - 12px), #000 0);
         -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 12px), #000 0);
         animation: l13 0.9s infinite linear;
+        margin-top: 10%;
+
     }
 
     @keyframes l13 {
         100% {
             transform: rotate(1turn)
-        }
-    }
-}
-
-@media screen and (max-width: 1000px) {
-    .PageContent {
-        left: 60px;
-        width: calc(100% - 60px);
-
-        #MainContent {
-            padding: 15px;
         }
     }
 }

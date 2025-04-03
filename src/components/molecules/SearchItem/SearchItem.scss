@@ -1,3 +1,5 @@
+@import "../../../styles/constants.scss";
+
 .SearchItem {
     display: flex;
     flex-direction: column;
@@ -7,11 +9,7 @@
     .SearchItemRow {
         display: flex;
         color: var(--color-midnight-green);
-        margin-left: 5%;
-        margin-right: 5%;
         justify-content: space-between;
-        border-radius: 3px;
-        cursor: pointer;
 
         // Button -> Don't select text
         -webkit-user-select: none;
@@ -26,24 +24,10 @@
             display: flex;
             align-items: center;
             padding-left: 8px;
+            color: var(--color-midnight-green);
+            font-size: var(--font-size-xlarge);
+            margin-bottom: 10px;
         }
-
-        .SearchItemCollapse {
-            margin-left: auto;
-            display: flex;
-            justify-content: center;
-            padding: 8px;
-            border-radius: 20px;
-            align-items: center;
-        }
-    }
-
-    .SearchItemRow:hover {
-        box-shadow: inset 0 0 5px 2px rgba(0, 0, 0, 0.3);
-    }
-
-    .SearchItemRow:active {
-        filter: brightness(1.4);
     }
 
     .SearchItemInput {

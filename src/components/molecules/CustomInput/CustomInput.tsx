@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import "./CustomInput.scss";
 import classNames from "classnames";
 
@@ -10,7 +10,25 @@ interface InputProps {
   invalid?: boolean;
   invalidMessage?: string;
   autocomplete?: boolean;
+  refresh?: boolean;
+  largePadding?: boolean;
   clearErrors?: () => void;
+}
+
+function useOutsideClickHandler(ref: any, callBack: () => void) {
+  useEffect(() => {
+    function handleClickOutside(event: any) {
+      if (ref.current && !ref.current.contains(event.target)) {
+        callBack();
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [ref, callBack]);
 }
 
 const CustomInput: React.FC<InputProps> = ({
@@ -21,22 +39,30 @@ const CustomInput: React.FC<InputProps> = ({
   invalid,
   invalidMessage,
   autocomplete,
+  refresh,
+  largePadding,
   clearErrors,
 }) => {
   const [isInvalid, setIsInvalid] = useState(invalid);
+  const [visibleError, setVisibleError] = useState(invalid);
+  const wrapperRef = useRef(null);
+
+  useOutsideClickHandler(wrapperRef, () => setVisibleError(false));
 
   useEffect(() => {
     setIsInvalid(invalid);
-  }, [invalid]);
+    setVisibleError(invalid);
+  }, [invalid, refresh]);
 
   const inputClasses = classNames("CustomInput", {
     InvalidCustomInput: isInvalid,
+    LargeCustomInputPadding: largePadding,
   });
   const inputErrorClasses = classNames("CustomInputError", {
-    CustomInputErrorVisible: isInvalid,
+    CustomInputErrorVisible: visibleError,
   });
   return (
-    <div className="CustomInputContainer">
+    <div className="CustomInputContainer" ref={wrapperRef}>
       <input
         onKeyDown={(e) => {
           if (e.key === "Enter") {
@@ -52,7 +78,7 @@ const CustomInput: React.FC<InputProps> = ({
           onChange(e.target.value);
         }}
       />
-      <p className={inputErrorClasses}>{isInvalid && invalidMessage}</p>
+      <p className={inputErrorClasses}>{visibleError && invalidMessage}</p>
     </div>
   );
 };

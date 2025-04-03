@@ -39,7 +39,8 @@
             flex: 1;
             margin-left: 5px;
             font-size: var(--font-size-xxlarge);
-            color: var(--color-old-rose);
+            background: var(--color-imperial-red);
+            color: var(--color-almost-white);
             cursor: pointer;
 
             // Button -> Don't select text
@@ -52,8 +53,7 @@
         }
 
         .ListSearchInputClear:hover {
-            background: var(--color-old-rose);
-            color: var(--color-almost-white);
+            filter: brightness(1.1);
         }
 
         .ListSearchInputClear:active {
@@ -62,14 +62,9 @@
     }
 
     .ListSearchOutputContainer {
-        // margin-left: auto;
-        // margin-right: auto;
-        // background: var(--color-almost-white);
-        // border-radius: 4px;
 
         .ListSearchOutput {
             display: flex;
-            // justify-content: space-around;
             margin-top: 8px;
             margin-bottom: 8px;
 
@@ -84,16 +79,6 @@
                 align-items: center;
             }
 
-            // justify-content: space-between;
-            // align-items: center;
-            // font-size: var(--font-size-medium);
-            // font-weight: 600;
-            // color: var(--color-midnight-green);
-            // padding: 10px;
-            // border: 2px solid var(--color-midnight-green);
-            // border-top: 0;
-            // border-bottom-left-radius: 4px;
-            // border-bottom-right-radius: 4px;
 
             .ListSearchOutputButton {
                 margin-right: 8px;
@@ -114,7 +99,7 @@
     border-radius: 5px;
     flex: 1;
     font-size: var(--font-size-large);
-    color: var(--color-old-rose);
+    color: var(--color-imperial-red);
     cursor: pointer;
     margin-left: 6px;
     padding-top: 3px;
@@ -136,7 +121,7 @@
 
 .ListSearchInputItemClear:hover {
     filter: hue-rotate(0);
-    background: var(--color-old-rose);
+    background: var(--color-imperial-red);
     color: var(--color-almost-white);
 
     p {

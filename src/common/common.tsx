@@ -60,7 +60,7 @@ const Colors: Color[] = [
   { name: "rose", css: "var(--color-old-rose)" },
 ];
 
-const Capitalize = (s: string) => {
+const Capitalize = (s: string | undefined) => {
   if (typeof s !== "string") return "";
   if (s.length === 0) return "";
   if (s.length === 1) return s.toUpperCase();
@@ -69,22 +69,30 @@ const Capitalize = (s: string) => {
 };
 
 enum ErrorCodes {
-  PASSWORD_INVALID = 402,
-  PASSWORD_LENGTH_INVALID = 411,
-  PASSWORD_WRONG = 405,
-  USERNAME_INVALID = 406,
-  USERNAME_TAKEN = 407,
-  USERNAME_WRONG = 409,
-  DISPLAY_NAME_INVALID = 403,
-  DISPLAY_NAME_TAKEN = 412,
-  TOKEN_ERROR = 413,
-  PLACEHOLDER_1 = 414,
-  PLACEHOLDER_2 = 415,
-  PLACEHOLDER_3 = 416,
-  PLACEHOLDER_4 = 417,
-  PLACEHOLDER_5 = 418,
+  PASSWORD_INVALID = 440,
+  PASSWORD_LENGTH_INVALID = 441,
+  PASSWORD_WRONG = 442,
+  USERNAME_INVALID = 443,
+  USERNAME_TAKEN = 444,
+  USERNAME_WRONG = 445,
+  DISPLAY_NAME_INVALID = 446,
+  DISPLAY_NAME_TAKEN = 447,
+  TOKEN_ERROR = 448,
+  INVALID_IMAGE_NAME = 449,
+  INVALID_IMAGE_TYPE = 450,
+  PLACEHOLDER_3 = 451,
+  PLACEHOLDER_4 = 452,
+  PLACEHOLDER_5 = 453,
   DEFAULT = 400,
 }
 
+enum PopUpFunctions {
+  GO_TO_RECIPE = "GO_TO_RECIPE",
+  DELETE_FUNCTION = "DELETE_FUNCTION",
+  HOME = "HOME",
+  RELOAD = "RELOAD",
+  CLOSE = "CLOSE",
+}
+
 export type { AutocompleteOption, Ingredient, ListItem, User };
-export { Icon, Colors, Capitalize, ErrorCodes };
+export { Icon, Colors, Capitalize, ErrorCodes, PopUpFunctions };

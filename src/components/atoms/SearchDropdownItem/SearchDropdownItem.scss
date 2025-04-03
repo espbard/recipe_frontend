@@ -1,0 +1,52 @@
+@import "../../../styles/constants.scss";
+
+
+.SearchDropdownItem {
+    margin: 1px;
+    background: var(--color-almost-white);
+    border-radius: 4px;
+    cursor: pointer;
+    filter: brightness(0.95);
+
+    // Button -> Don't select text
+    -webkit-user-select: none;
+    /* Safari */
+    -ms-user-select: none;
+    /* IE 10 and IE 11 */
+    user-select: none;
+    /* Standard syntax */
+    display: flex;
+
+    .SearchDropdownImageContainer {
+        display: flex;
+
+        img {
+            width: 75px;
+            height: 75px;
+            object-fit: cover;
+            background: white;
+        }
+    }
+
+    .SearchDropdownTextContainer {
+        display: flex;
+        max-width: 100%;
+        overflow: hidden;
+
+        p {
+            font-size: var(--font-size-medium);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+}
+
+.SearchDropdownItem:hover {
+    box-shadow: inset 0px 0px 10px 4px rgba(0, 0, 0, 0.25);
+}
+
+.SearchDropdownItem:active {
+    box-shadow: inset 0px 0px 10px 4px rgba(0, 0, 0, 0.5);
+    filter: brightness(1.3);
+}

@@ -8,6 +8,7 @@ interface InstructionProps {
   onChange: (index: number, text: string) => void;
   remove: (index: number) => void;
   move: (index: number, direction_up: boolean) => void;
+  onEnter?: () => void;
 }
 
 export class InstructionInput extends Component<InstructionProps> {
@@ -22,6 +23,11 @@ export class InstructionInput extends Component<InstructionProps> {
           value={this.props.text}
           onChange={(e) => {
             this.props.onChange(this.props.id, e.target.value);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              this.props.onEnter && this.props.onEnter();
+            }
           }}
         />
 

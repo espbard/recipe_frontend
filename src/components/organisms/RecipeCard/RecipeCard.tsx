@@ -59,8 +59,11 @@ export class RecipeCard extends Component<RecipeCardProps, RecipeCardStates> {
     }
 
     iface.getImage(this.props.recipe_object.image).then((image_response) => {
-      if (image_response === undefined) {
-        console.log("Image not found");
+      if (
+        image_response === undefined ||
+        image_response.message !== undefined
+      ) {
+        // console.log("Image not found");
       } else {
         this.setState({ imageBase64: image_response });
         this.setState({ imageSet: true });

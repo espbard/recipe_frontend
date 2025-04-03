@@ -1,107 +1,69 @@
 @import "../../styles/constants.scss";
 
-.LoginPage {
+#LoginPage {
+    background: var(--color-white);
     display: flex;
     flex-direction: column;
-    background: var(--color-white);
+    width: 50%;
+    min-width: 500px;
+    align-self: center;
+    padding-top: 2cqb;
+    padding-bottom: 2cqb;
+    border-radius: 10px;
 
-    .LoginpageContainer {
-        width: 900px;
-        max-width: 100%;
+    .LoginPageRow {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .LoginInputRow {
+        display: flex;
+        flex-direction: column;
         margin-left: auto;
         margin-right: auto;
-        margin-top: 20px;
-        margin-bottom: 20px;
-
-        .LoginTitleContainer {
-            display: flex;
-            color: var(--color-cerulean);
-
-            .LoginTitle {
-                flex: 1;
-                text-align: center;
-                font-size: var(--font-size-xxxlarge);
-            }
-        }
-
-        .LoginRow {
-            display: flex;
-            margin-top: 10px;
-            margin-bottom: 10px;
-            align-items: center;
-            width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-
-            .LoginSubTitle {
-                color: var(--color-cerulean);
-                font-size: var(--font-size-medium);
-                font-weight: 600;
-                width: 20%;
-                max-width: 20%;
-                min-width: 20%;
-                text-align: end;
-            }
-
-            .LoginInputContainer {
-                width: 70%;
-                max-width: 70%;
-                min-width: 70%;
-                margin-left: 5%;
-                margin-right: 5%;
-            }
-        }
-
-        .CustomButton {
-            margin-left: 15%;
-            margin-right: 15%;
-            border-radius: 6px;
-        }
+        width: 100%;
+        padding: 15px;
     }
-}
 
-@media screen and (max-width: 1000px) {
-    .LoginPage {
-        border-radius: 15px;
-        overflow: hidden;
+    .LoginSubTitle {
+        font-size: var(--font-size-large);
+        font-weight: 500;
+        margin-bottom: 2px;
+        margin-top: 2px;
+        color: var(--color-midnight-green);
+        text-align: start;
+        margin-right: auto;
+    }
 
-        .LoginpageContainer {
-            margin: 0;
+    #ButtonRow {
+        flex-direction: column;
+        align-items: center;
+        margin-top: 10px;
 
-            .LoginTitleContainer {
-                .LoginTitle {
-                    font-size: var(--font-size-xxlarge);
-                    margin-top: 15px;
-                    margin-bottom: 15px;
-                }
+        .ButtonContainer {
+            width: 80%;
+            border-radius: 10px;
+            overflow: hidden;
+            font-weight: 500;
+        }
+
+        .RegisterUserText {
+            margin-top: 5px;
+            display: flex;
+            font-size: var(--font-size-medium);
+
+            .RegisterUserLink {
+                color: var(--color-midnight-green);
+                text-decoration: underline;
+                cursor: pointer;
+                font-weight: bold;
+                margin-left: 5px;
             }
 
-            .LoginRow {
-                width: 100%;
-                margin-top: 15px;
-                margin-bottom: 0;
-                // align-items: start;
-                flex-direction: column;
-
-                .LoginSubTitle {
-                    margin-left: 20px;
-                    margin-right: 20px;
-                    font-size: var(--font-size-medium);
-                    width: 80%;
-                    text-align: start;
-                    max-width: 80%;
-                }
-
-                .LoginInputContainer {
-                    width: 80%;
-                    max-width: 80%;
-                }
-            }
-
-            .CustomButton {
-                width: 100%;
-                margin: 0;
-                margin-top: auto;
+            .RegisterUserLink:hover {
+                color: var(--color-main-darker);
             }
         }
     }

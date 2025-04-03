@@ -28,6 +28,7 @@
         .PopUpTitle {
             background: var(--color-imperial-red);
             color: var(--color-almost-white);
+            font-size: var(--font-size-large);
             padding-left: 10px;
             padding-right: 10px;
             flex: 1;
@@ -37,6 +38,7 @@
             color: var(--color-almost-black);
             padding-left: 10px;
             padding-right: 10px;
+            font-size: var(--font-size-large);
             flex: 2;
         }
 

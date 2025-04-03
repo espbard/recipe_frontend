@@ -1,101 +1,72 @@
 @import "../../../styles/constants.scss";
 
-.NavBar {
+#NavBar {
     display: flex;
-    justify-content: space-between;
-    width: 100%;
     background: var(--color-white);
-    padding-top: 15px;
-    padding-bottom: 15px;
-    align-items: center;
-
-    #NavBar_Title_Container {
-        padding-left: 2%;
-        padding-right: 2%;
-        height: 100%;
-        display: flex;
-
-        h4 {
-            margin: 0;
-            color: var(--color-midnight-green);
-        }
-
-        .NavBar_Title {
-            font-size: var(--font-size-xxxlarge);
-            font-weight: bold;
-            white-space: nowrap;
-        }
-    }
-
-    #NavBar_Search_Bar {
-        display: flex;
-        align-items: center;
-        margin-left: auto;
-        margin-right: 4px;
-        margin-top: auto;
-        margin-bottom: auto;
-
-        // Button -> Don't select text
-        -webkit-user-select: none;
-        /* Safari */
-        -ms-user-select: none;
-        /* IE 10 and IE 11 */
-        user-select: none;
-        /* Standard syntax */
-
-        .NavBar_Search_Input {
-            background: var(--color-white);
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid var(--color-almost-black);
-            font-weight: 600;
-            color: var(--color-midnight-green);
-        }
-
-        .NavBar_Search_Input.DisabledInput {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .NavBar_Search_Icon {
-            color: var(--color-almost-black);
-            margin-left: -24px;
-            opacity: 0.3;
-        }
-
-        .NavBar_Search_Icon.DisabledInputIcon {
-            opacity: 0.15;
-        }
-    }
-
-    #NavBar_LogoutLink {
-        display: flex;
-        align-items: center;
-        padding-left: 20px;
-        padding-right: 20px;
-    }
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    padding-left: 5px;
+    z-index: 5;
 }
 
-.NavBar.NavBarCentered {
+#NavBarTitleContainer {
     display: flex;
-    justify-content: center;
+    align-items: center;
+    font-size: var(--font-size-xlarge);
+    flex: 1;
+
+    .NavBarTitle {
+        color: var(--color-midnight-green);
+        font-weight: 700 !important;
+    }
 }
 
-.NavBar.NavBarBlurred {
-    filter: blur(1px);
+#NavBarEnd {
+    margin-left: auto;
+    margin-right: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    flex: 1;
+    overflow: hidden;
+
+    >div {
+        margin-left: 20px;
+        margin-right: 10px;
+    }
 }
+
+#NavBarSearch {
+    display: flex;
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: 0;
+    padding: 3px;
+
+    input {
+        padding: 2px;
+        font-size: var(--font-size-small);
+        width: 100%;
+        border-radius: 4px !important;
+        border: 2px solid var(--color-midnight-green);
+        color: var(--color-midnight-green);
+    }
+}
+
 
 @media screen and (max-width: 1000px) {
-    .NavBar {
-        #NavBar_Title_Container {
-            .NavBar_Title {
-                margin-top: 10px;
-                margin-bottom: 10px;
-            }
-        }
+    #NavBarTitleContainer {
 
-        #NavBar_LogoutLink #LoginLink_Button {
-            font-size: var(--font-size-xsmall);
+        .NavBarTitle {
+            font-size: var(--font-size-medium);
+        }
+    }
+
+    #NavBarEnd {
+        margin-right: 5px;
+
+        >div {
+            margin-left: 0;
+            margin-right: 5px;
         }
     }
 }
