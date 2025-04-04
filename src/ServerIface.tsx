@@ -20,7 +20,9 @@ interface PostRecipeIface {
 class ServerIface {
   baseUrl: string;
 
-  constructor(baseUrl: string = "http://127.0.0.1:7777/") {
+  constructor(
+    baseUrl: string = process.env.BACKEND_BASE_URL || "http://127.0.0.1:7777/"
+  ) {
     this.baseUrl = baseUrl;
   }
 
