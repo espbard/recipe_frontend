@@ -4,13 +4,8 @@ import ServerIface from "../../../ServerIface";
 import ErrorPage from "../../../pages/error_page/ErrorPage";
 import "./PageTemplate.scss";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
-import {
-  setGlobalLoading,
-  setPopup,
-  setServerConnection,
-} from "../../../redux/globalSlice";
+import { setServerConnection } from "../../../redux/globalSlice";
 import PopUp from "../../molecules/PopUp/PopUp";
-import { PopUpFunctions } from "../../../common/common";
 interface PageTemplateProps {
   content: JSX.Element;
 }
@@ -55,7 +50,7 @@ const PageTemplate: React.FC<PageTemplateProps> = ({ content }) => {
     } else {
       connectToServer();
     }
-  }, []);
+  }, [dispatch]);
 
   return (
     <div id="PageTemplate">

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import FilterSvg from "../../../assets/images/filter.svg";
+import CloseSvg from "../../../assets/images/x-symbol.svg";
 import "./FiltersBar.scss";
 import SearchItem from "../../molecules/SearchItem/SearchItem";
 import { Icon, ListItem } from "../../../common/common";
@@ -10,7 +11,7 @@ import {
 } from "../../../redux/globalSlice";
 import ServerIface from "../../../ServerIface";
 
-const FiltersBar: React.FC = ({}) => {
+const FiltersBar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(true);
   const [ingredientsList, setIngredientsList] = useState<ListItem[]>([]);
   const selectedIngredients = useAppSelector(
@@ -152,13 +153,26 @@ const FiltersBar: React.FC = ({}) => {
   return (
     <div id="FiltersBar">
       <div className="FilterIconContainer">
-        <div className="FilterIcon">
-          <img
-            src={FilterSvg}
-            onClick={() => setCollapsed(!collapsed)}
-            tabIndex={0}
-          />
-        </div>
+        {!collapsed ? (
+          <div className="FilterIcon IconExtraPadding">
+            <img
+              src={CloseSvg}
+              onClick={() => setCollapsed(true)}
+              tabIndex={0}
+              alt="Close"
+            />
+          </div>
+        ) : (
+          <div className="FilterIcon">
+            <img
+              src={FilterSvg}
+              onClick={() => setCollapsed(false)}
+              tabIndex={0}
+              alt="Filter"
+            />
+          </div>
+        )}
+
         {(selectedIngredients.length > 0 || selectedTags.length > 0) && (
           <div className="FilterDotContainer">
             <p className="FilterDot">{Icon.Dot}</p>

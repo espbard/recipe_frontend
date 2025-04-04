@@ -15,10 +15,10 @@ const NavBar: React.FC = () => {
   const [recipeList, setRecipeList] = useState<ListItem[]>([]);
   const [currentSearchStr, setCurrentSearchStr] = useState("");
   const dispatch = useAppDispatch();
-  const iface = new ServerIface();
 
   useEffect(() => {
     const tokenCookie = Cookies.get("token");
+    const iface = new ServerIface();
 
     if (tokenCookie === undefined) {
       return;
@@ -46,7 +46,7 @@ const NavBar: React.FC = () => {
         <div id="SidebarLogo">
           <TinyImage url={logo} alt="Logo" onClickUrl="/" />
         </div>
-        <h4 className="NavBarTitle">Our Recipes</h4>
+        <h4 className="NavBarTitle">Our Recipes 🧡</h4>
       </div>
       {token && (
         <div id="NavBarEnd">

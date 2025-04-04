@@ -8,28 +8,28 @@ import { setGlobalLoading } from "../../redux/globalSlice";
 const Home: React.FC = () => {
   const dispatch = useDispatch();
 
-  const getRecipes = async () => {
-    dispatch(setGlobalLoading(true));
-
-    // Simulate an async operation, e.g., fetching data
-    const content = await new Promise<JSX.Element>((resolve) =>
-      setTimeout(() => resolve(<RecipeList />), 1000)
-    );
-
-    // dispatch(setGlobalLoading(false));
-    return content;
-  };
-
   const [content, setContent] = React.useState<JSX.Element | null>(null);
 
   React.useEffect(() => {
+    const getRecipes = async () => {
+      dispatch(setGlobalLoading(true));
+
+      // Simulate an async operation, e.g., fetching data
+      const content = await new Promise<JSX.Element>((resolve) =>
+        setTimeout(() => resolve(<RecipeList />), 1000)
+      );
+
+      // dispatch(setGlobalLoading(false));
+      return content;
+    };
+
     const fetchContent = async () => {
       const loadedContent = await getRecipes();
       setContent(loadedContent);
     };
 
     fetchContent();
-  }, []);
+  }, [dispatch]);
 
   return <PageTemplate content={content ?? <div />} />;
 };

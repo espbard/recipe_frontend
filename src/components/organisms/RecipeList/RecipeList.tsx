@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import ServerIface from "../../../ServerIface";
-import { RecipeCard } from "../RecipeCard/RecipeCard";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../../redux/hooks";
 import "./RecipeList.scss";
@@ -89,32 +88,32 @@ const RecipeList: React.FC = () => {
     fetchRecipes();
   }, []);
 
-  const filterIngredients = (ingredients: any) => {
-    for (let i = 0; i < selectedIngredients.length; i++) {
-      if (!ingredients.includes(selectedIngredients[i].name)) {
-        return false;
-      }
-    }
-    return true;
-  };
-
-  const filterTags = (tags: any) => {
-    for (let i = 0; i < selectedTags.length; i++) {
-      if (!tags.includes(selectedTags[i].name)) {
-        return false;
-      }
-    }
-    return true;
-  };
-
-  const filterBySearchStr = (title: any) => {
-    if (search_str === undefined || search_str.length === 0) {
-      return true;
-    }
-    return title.toLowerCase().includes(search_str.toLowerCase());
-  };
-
   useEffect(() => {
+    const filterIngredients = (ingredients: any) => {
+      for (let i = 0; i < selectedIngredients.length; i++) {
+        if (!ingredients.includes(selectedIngredients[i].name)) {
+          return false;
+        }
+      }
+      return true;
+    };
+
+    const filterTags = (tags: any) => {
+      for (let i = 0; i < selectedTags.length; i++) {
+        if (!tags.includes(selectedTags[i].name)) {
+          return false;
+        }
+      }
+      return true;
+    };
+
+    const filterBySearchStr = (title: any) => {
+      if (search_str === undefined || search_str.length === 0) {
+        return true;
+      }
+      return title.toLowerCase().includes(search_str.toLowerCase());
+    };
+
     setFilteredRecipes([]);
     const recipeList = [];
     for (let i = 0; i < recipes.length; i++) {
@@ -128,31 +127,31 @@ const RecipeList: React.FC = () => {
     }
     setFilteredRecipes(recipeList);
     dispatch(setGlobalLoading(false));
-  }, [selectedIngredients, selectedTags, search_str, recipes]);
+  }, [selectedIngredients, selectedTags, search_str, recipes, dispatch]);
 
   useEffect(() => {
+    const getFilteredRecipes = async () => {
+      dispatch(setGlobalLoading(true));
+
+      // Simulate an async operation, e.g., fetching data
+      const content = await new Promise<JSX.Element>((resolve) =>
+        setTimeout(
+          () => resolve(<FilteredRecipeList content={filteredRecipes} />),
+          1000
+        )
+      );
+
+      dispatch(setGlobalLoading(false));
+      return content;
+    };
+
     const fetchContent = async () => {
       const loadedContent = await getFilteredRecipes();
       setContent(loadedContent);
     };
 
     fetchContent();
-  }, [filteredRecipes]);
-
-  const getFilteredRecipes = async () => {
-    dispatch(setGlobalLoading(true));
-
-    // Simulate an async operation, e.g., fetching data
-    const content = await new Promise<JSX.Element>((resolve) =>
-      setTimeout(
-        () => resolve(<FilteredRecipeList content={filteredRecipes} />),
-        1000
-      )
-    );
-
-    dispatch(setGlobalLoading(false));
-    return content;
-  };
+  }, [filteredRecipes, dispatch]);
 
   const [content, setContent] = React.useState<JSX.Element | null>(null);
 
