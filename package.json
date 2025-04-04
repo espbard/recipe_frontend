@@ -33,7 +33,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "node --no-deprecation node_modules/react-scripts/scripts/start.js",
+    "start": "react-scripts start --max-old-space-size=512",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
