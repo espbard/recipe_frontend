@@ -17,8 +17,8 @@ RUN npm install
 # Copy the rest of your application files
 FROM nginx:alpine
 COPY . .
-COPY --from=build /app/build /usr/share/nginx/html
 RUN npm run build
 
 # Define the command to run your app
+COPY --from=build /app/build /usr/share/nginx/html
 CMD ["nginx", "-g", "daemon off;"]
