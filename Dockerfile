@@ -1,5 +1,5 @@
 # Use the latest LTS version of Node.js
-FROM node:23-alpine
+FROM node:18-alpine AS build
 
 # Set the working directory inside the container
 WORKDIR /
@@ -15,10 +15,10 @@ COPY package*.json ./
 RUN npm install
 
 # Copy the rest of your application files
+FROM nginx:alpine
 COPY . .
-
-# Expose the port your app runs on
-EXPOSE 3000
+COPY --from=build /app/build /usr/share/nginx/html
+RUN npm run build
 
 # Define the command to run your app
-CMD ["npm", "start"]
+CMD ["nginx", "-g", "daemon off;"]
