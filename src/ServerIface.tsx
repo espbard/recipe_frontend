@@ -21,7 +21,8 @@ class ServerIface {
   baseUrl: string;
 
   constructor(
-    baseUrl: string = process.env.BACKEND_BASE_URL || "http://127.0.0.1:7777/"
+    baseUrl: string = process.env.REACT_APP_BACKEND_BASE_URL ||
+      "https://recipebackend-production-570f.up.railway.app/"
   ) {
     this.baseUrl = baseUrl;
   }
@@ -31,6 +32,8 @@ class ServerIface {
   }
 
   async connect() {
+    console.log("ENV URL  =", process.env.REACT_APP_BACKEND_BASE_URL);
+    console.log("USED URL =", this.baseUrl);
     try {
       const response = await fetch(`${this.baseUrl}health`, {
         method: "GET",
