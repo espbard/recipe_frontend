@@ -1,6 +1,14 @@
 import store from "./redux/store";
-import { setError } from "./redux/globalSlice";
+import { setError, setPopup } from "./redux/globalSlice";
 import { ErrorCodes, Ingredient } from "./common/common";
+import { S3Client } from "@aws-sdk/client-s3";
+
+const ACCESS_KEY_ID = "d0ee871c416143ddf346f1abdce1364f";
+const ACCESS_KEY_SECRET =
+  "842d78f2cece773ab4de5f4a596be6e1aebf22ecd8d2d013635cd90ef1d62a00";
+const R2_ENPOINT =
+  "https://baec190b8cc3c8c7d0a4e06fb6bdcbc6.r2.cloudflarestorage.com";
+const CDN_URL = "https://cdn-server.espen-bardevik.workers.dev/";
 
 interface PutRecipeIface {
   title: string;
@@ -25,15 +33,15 @@ class ServerIface {
       "https://recipebackend-production-570f.up.railway.app/"
   ) {
     this.baseUrl = baseUrl;
+    // this.baseUrl = "http://localhost:7777/";
   }
 
   setGlobalError(errorMsg: string) {
     store.dispatch(setError({ isError: true, message: errorMsg }));
+    store.dispatch(setPopup({ open: true, isError: true, message: errorMsg }));
   }
 
   async connect() {
-    console.log("ENV URL  =", process.env.REACT_APP_BACKEND_BASE_URL);
-    console.log("USED URL =", this.baseUrl);
     try {
       const response = await fetch(`${this.baseUrl}health`, {
         method: "GET",
@@ -126,28 +134,8 @@ class ServerIface {
     }
   }
 
-  async getImage(image_name: string) {
-    try {
-      const response = await fetch(
-        `${this.baseUrl}images?search=${image_name}`
-      );
-
-      let res = await response.json();
-
-      if (res === undefined) {
-        console.error("GET request failed:", res.error);
-        this.setGlobalError(
-          `Failed to get image '${image_name}': ` + res.error
-        );
-      }
-
-      return res;
-    } catch (error: any) {
-      console.error("GET request failed:", error);
-      this.setGlobalError(
-        `Failed to get image '${image_name}': ` + error.message
-      );
-    }
+  getCdn() {
+    return CDN_URL;
   }
 
   async uploadImage(file: File) {

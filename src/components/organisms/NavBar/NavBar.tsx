@@ -46,7 +46,7 @@ const NavBar: React.FC = () => {
         <div id="SidebarLogo">
           <TinyImage url={logo} alt="Logo" onClickUrl="/" />
         </div>
-        <h4 className="NavBarTitle">Our Recipes 🧡</h4>
+        <h4 className="NavBarTitle">Our Recipes ❤️</h4>
       </div>
       {token && (
         <div id="NavBarEnd">

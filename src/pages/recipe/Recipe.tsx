@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { SyntheticEvent, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import PageTemplate from "../../components/templates/PageTemplate/PageTemplate";
 import { useNavigate } from "react-router-dom";
@@ -31,21 +31,23 @@ interface RecipeIface {
 }
 
 function FormatDate(date: string) {
-  if (date.length > 0) {
-    var year = date.split("-")[0];
-    var month = date.split("-")[1];
-    var day_unformatted = date.split("-")[2].split("T")[0];
+  // if (date.length > 0) {
+  //   var year = date.split("-")[0];
+  //   var month = date.split("-")[1];
+  //   var day_unformatted = date.split("-")[2].split("T")[0];
 
-    if (day_unformatted === undefined) {
-      return "N/A";
-    }
-    var day = day_unformatted.split(" ")[0];
+  //   if (day_unformatted === undefined) {
+  //     return "N/A";
+  //   }
+  //   var day = day_unformatted.split(" ")[0];
 
-    var formatted_date = day + "/" + month + "/" + year;
-    return formatted_date;
-  } else {
-    return "N/A";
-  }
+  //   var formatted_date = day + "/" + month + "/" + year;
+  //   return formatted_date;
+  // } else {
+  //   return "N/A";
+  // }
+
+  return date;
 }
 
 const Recipe: React.FC = () => {
@@ -65,7 +67,7 @@ const Recipe: React.FC = () => {
   const [author, setAuthor] = useState<string>("");
   const [originalPortions, setOriginalPortions] = useState<number>(0);
   const [activePortions, setActivePortions] = useState<number>(0);
-  const [imageBase64, setImageBase64] = useState<string>("");
+  const [image, setImage] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const { id } = useParams();
   const dispatch = useAppDispatch();
@@ -172,8 +174,8 @@ const Recipe: React.FC = () => {
       }
 
       if (recipe.image.length !== 0) {
-        let image_response = await iface.getImage(recipe.image);
-        setImageBase64(image_response);
+        let cdn_url = iface.getCdn();
+        setImage(cdn_url + recipe.image);
       }
 
       setRecipe(recipe);
@@ -226,20 +228,17 @@ const Recipe: React.FC = () => {
     }
   }, [recipe.description]);
 
+  const addImageFallback = (event: SyntheticEvent<HTMLImageElement, Event>) => {
+    event.currentTarget.src = missing_picture_placeholder;
+  };
+
   return (
     <PageTemplate
       content={
         <div id="RecipePage">
           <div className="RecipeContainer">
             <div className="RecipeImageContainer">
-              {imageBase64.length > 0 ? (
-                <img
-                  src={`data:image/jpg;base64,${imageBase64}`}
-                  alt="Recipe"
-                />
-              ) : (
-                <img src={missing_picture_placeholder} alt="Recipe" />
-              )}
+              <img src={image} alt="Recipe" onError={addImageFallback} />
             </div>
             <div className="Recipe">
               <div className="RecipeRow" id="RecipeTitleContainer">

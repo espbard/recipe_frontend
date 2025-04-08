@@ -69,34 +69,36 @@ const Login: React.FC = () => {
       content={
         <div id="LoginPage">
           <div className="LoginPageRow" id="LoginInputContainer">
-            <div className="LoginInputRow">
-              <p className="LoginSubTitle">Username: </p>
-              <CustomInput
-                type="text"
-                placeholder=""
-                autocomplete={true}
-                invalid={invalidUsername}
-                invalidMessage={usernameErrorMsg}
-                onChange={setUsername}
-                largePadding
-                onKeyDown={() => handleLogin(username, password)}
-                clearErrors={clearErrors}
-              />
-            </div>
-            <div className="LoginInputRow">
-              <p className="LoginSubTitle">Password: </p>
-              <CustomInput
-                type="password"
-                placeholder=""
-                autocomplete={true}
-                invalid={invalidPassword}
-                invalidMessage={passwordErrorMsg}
-                onChange={setPassword}
-                largePadding
-                onKeyDown={() => handleLogin(username, password)}
-                clearErrors={clearErrors}
-              />
-            </div>
+            <form>
+              <div className="LoginInputRow">
+                <p className="LoginSubTitle">Username: </p>
+                <CustomInput
+                  type="text"
+                  placeholder=""
+                  autocomplete={true}
+                  invalid={invalidUsername}
+                  invalidMessage={usernameErrorMsg}
+                  onChange={setUsername}
+                  largePadding
+                  onKeyDown={() => handleLogin(username, password)}
+                  clearErrors={clearErrors}
+                />
+              </div>
+              <div className="LoginInputRow">
+                <p className="LoginSubTitle">Password: </p>
+                <CustomInput
+                  type="password"
+                  placeholder=""
+                  autocomplete={true}
+                  invalid={invalidPassword}
+                  invalidMessage={passwordErrorMsg}
+                  onChange={setPassword}
+                  largePadding
+                  onKeyDown={() => handleLogin(username, password)}
+                  clearErrors={clearErrors}
+                />
+              </div>
+            </form>
           </div>
           <div className="LoginPageRow" id="ButtonRow">
             <div className="ButtonContainer">

@@ -51,3 +51,10 @@
         width: 40px;
     }
 }
+
+
+@media screen and (max-width: 1000px) {
+    .CustomButton.InvertedButton {
+        border: 0px;
+    }
+}

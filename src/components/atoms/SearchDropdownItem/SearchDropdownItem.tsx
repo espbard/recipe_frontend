@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { SyntheticEvent, useEffect, useState } from "react";
 import { Capitalize } from "../../../common/common";
 import "./SearchDropdownItem.scss";
 import ServerIface from "../../../ServerIface";
@@ -21,7 +21,7 @@ const SearchDropdownItem: React.FC<SearchDropdownItemProps> = ({ id }) => {
     title: "",
     image: "",
   });
-  const [imageBase64, setImageBase64] = useState<String>("");
+  const [image, setImage] = useState<string>("");
   const [usePlaceholder, setUsePlaceholder] = useState<boolean>(true);
 
   useEffect(() => {
@@ -35,14 +35,8 @@ const SearchDropdownItem: React.FC<SearchDropdownItemProps> = ({ id }) => {
         };
         setRecipe(temp_recipe);
         if (response[0].image !== "") {
-          iface.getImage(response[0].image).then((image_response) => {
-            if (image_response === undefined) {
-              setUsePlaceholder(true);
-            } else {
-              setUsePlaceholder(false);
-              setImageBase64(image_response);
-            }
-          });
+          let cdn_url = iface.getCdn();
+          setImage(cdn_url + response[0].image);
         }
       }
     });
@@ -54,14 +48,14 @@ const SearchDropdownItem: React.FC<SearchDropdownItemProps> = ({ id }) => {
     navigate("/recipe/" + recipe.id);
   };
 
+  const addImageFallback = (event: SyntheticEvent<HTMLImageElement, Event>) => {
+    event.currentTarget.src = missing_picture_placeholder;
+  };
+
   return (
     <div className="SearchDropdownItem" onClick={handleClick}>
       <div className="SearchDropdownImageContainer">
-        {usePlaceholder ? (
-          <img src={missing_picture_placeholder} alt="Recipe" />
-        ) : (
-          <img src={`data:image/jpg;base64,${imageBase64}`} alt="Recipe" />
-        )}
+        <img src={image} onError={addImageFallback} alt="Recipe" />
       </div>
       <div className="SearchDropdownTextContainer">
         <p>{Capitalize(recipe.title)}</p>

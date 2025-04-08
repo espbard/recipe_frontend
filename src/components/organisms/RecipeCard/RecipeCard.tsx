@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { Component, SyntheticEvent } from "react";
 import ServerIface from "../../../ServerIface";
 import "./RecipeCard.scss";
 import missing_picture_placeholder from "../../../assets/images/missing_picture_placeholder.png";
@@ -21,17 +21,16 @@ interface RecipeCardProps {
 }
 
 interface RecipeCardStates {
-  author: String;
-  imageBase64: String;
-  imageSet: boolean;
+  author: string;
+  image: string;
 }
 
 function FormatDate(date: string) {
   var year = date.split("-")[0];
   var month = date.split("-")[1];
-  var day = date.split("-")[2].split("T")[0];
+  var day = date.split("-")[2];
 
-  var formatted_date = day + "/" + month + "/" + year;
+  var formatted_date = day + "." + month + "." + year;
   return formatted_date;
 }
 export class RecipeCard extends Component<RecipeCardProps, RecipeCardStates> {
@@ -39,54 +38,52 @@ export class RecipeCard extends Component<RecipeCardProps, RecipeCardStates> {
     super(props);
     this.state = {
       author: "N/A",
-      imageBase64: "",
-      imageSet: false,
+      image: "",
     };
   }
 
   componentDidMount() {
     const iface = new ServerIface();
-    iface
-      .get_search("user", this.props.recipe_object.user_id.toLocaleString())
-      .then((response) => {
+    if (
+      this.props.recipe_object !== undefined &&
+      this.props.recipe_object.user_id !== undefined
+    ) {
+      let user_id = this.props.recipe_object.user_id;
+      iface.get_search("user", user_id.toLocaleString()).then((response) => {
         if (response[0].display_name !== undefined) {
           this.setState({ author: response[0].display_name });
         }
       });
+    }
 
     if (this.props.recipe_object.image === "") {
       return;
     }
 
-    iface.getImage(this.props.recipe_object.image).then((image_response) => {
-      if (
-        image_response === undefined ||
-        image_response.message !== undefined
-      ) {
-        // console.log("Image not found");
-      } else {
-        this.setState({ imageBase64: image_response });
-        this.setState({ imageSet: true });
-      }
-    });
+    const cdn_url = iface.getCdn();
+
+    this.setState({ image: cdn_url + this.props.recipe_object.image });
   }
 
   render() {
     const recipeCardClasses = classNames("RecipeCardContainer", {
       RecipeCardDisabled: this.props.disabled,
     });
+    const addImageFallback = (
+      event: SyntheticEvent<HTMLImageElement, Event>
+    ) => {
+      event.currentTarget.src = missing_picture_placeholder;
+    };
+
     if (this.props.disabled) {
       return (
         <div className={recipeCardClasses}>
           <div className="RecipeCardImageContainer">
-            {this.state.imageSet ? (
-              <img
-                src={`data:image/jpg;base64,${this.state.imageBase64}`}
-                alt="Recipe"
-              />
-            ) : (
-              <img src={missing_picture_placeholder} alt="Recipe" />
-            )}
+            <img
+              src={this.state.image}
+              alt="Recipe"
+              onError={addImageFallback}
+            />
           </div>
           <div className="RecipeCardContentContainer">
             <div className="RecipeCardTitleContainer">
@@ -95,7 +92,9 @@ export class RecipeCard extends Component<RecipeCardProps, RecipeCardStates> {
               </h3>
             </div>
             <div className="RecipeCardAuthorInfo">
-              <p>By: {Capitalize(this.state.author.toString())}</p>
+              <p>
+                By: <b>{Capitalize(this.state.author.toString())}</b>
+              </p>
               <p>{FormatDate(this.props.recipe_object.created_at)}</p>
             </div>
           </div>
@@ -109,14 +108,7 @@ export class RecipeCard extends Component<RecipeCardProps, RecipeCardStates> {
         className="RecipeCardContainer"
       >
         <div className="RecipeCardImageContainer">
-          {this.state.imageSet ? (
-            <img
-              src={`data:image/jpg;base64,${this.state.imageBase64}`}
-              alt="Recipe"
-            />
-          ) : (
-            <img src={missing_picture_placeholder} alt="Recipe" />
-          )}
+          <img src={this.state.image} alt="Recipe" onError={addImageFallback} />
         </div>
         <div className="RecipeCardContentContainer">
           <div className="RecipeCardTitleContainer">
@@ -125,7 +117,9 @@ export class RecipeCard extends Component<RecipeCardProps, RecipeCardStates> {
             </h3>
           </div>
           <div className="RecipeCardAuthorInfo">
-            <p>By: {Capitalize(this.state.author.toString())}</p>
+            <p>
+              By: <b> {Capitalize(this.state.author.toString())}</b>
+            </p>
             <p>{FormatDate(this.props.recipe_object.created_at)}</p>
           </div>
         </div>

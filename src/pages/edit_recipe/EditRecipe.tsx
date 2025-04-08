@@ -281,7 +281,10 @@ const EditRecipe: React.FC = () => {
   };
 
   const add_ingredient = (moveToNextIngredient?: boolean) => {
-    if (recipe.ingredients[recipe.ingredients.length - 1].name === "") {
+    if (
+      recipe.ingredients[recipe.ingredients.length - 1] !== undefined &&
+      recipe.ingredients[recipe.ingredients.length - 1].name === ""
+    ) {
       return;
     }
     const new_ingredients = [...recipe.ingredients];
@@ -294,7 +297,10 @@ const EditRecipe: React.FC = () => {
   };
 
   const add_instruction = (moveToNextInstruction?: boolean) => {
-    if (recipe.instructions[recipe.instructions.length - 1] === "") {
+    if (
+      recipe.instructions !== undefined &&
+      recipe.instructions[recipe.instructions.length - 1] === ""
+    ) {
       return;
     }
     const new_instructions = [...recipe.instructions];

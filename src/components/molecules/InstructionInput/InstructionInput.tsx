@@ -33,13 +33,13 @@ export class InstructionInput extends Component<InstructionProps> {
 
         <div className="NewRecipeInstructionButtonsRow">
           <CustomButton
-            label="⮝"
+            label="⬆️"
             onClick={() => this.props.move(this.props.id, true)}
             size="small"
             inverted
           />
           <CustomButton
-            label="⮟"
+            label="⬇️"
             onClick={() => this.props.move(this.props.id, false)}
             size="small"
             inverted
