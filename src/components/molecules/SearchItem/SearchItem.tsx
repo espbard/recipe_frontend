@@ -28,7 +28,7 @@ const SearchItem: React.FC<SearchItemProps> = ({
       </div>
       <div className="SearchItemInput">
         <ListSearch
-          label={"Select " + label}
+          label={"Select " + label?.toLocaleLowerCase()}
           list={list}
           selectedOptions={selectedItems}
           selectOption={selectOption}

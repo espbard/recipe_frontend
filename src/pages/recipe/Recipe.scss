@@ -64,7 +64,7 @@
         .PortionsContainer {
             display: flex;
             align-items: center;
-            justify-content: start;
+            justify-content: space-between;
 
             .PortionsLabel {
                 color: var(--color-midnight-green);
@@ -267,14 +267,43 @@
     }
 }
 
+
+
+.MealTypeText {
+    margin: 0;
+    margin-right: 5px;
+    background: var(--color-main);
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: var(--color-midnight-green);
+    border: 2px dotted var(--color-midnight-green);
+}
+
+
 .RecipeButtonsContainer {
     display: flex;
     border-bottom-left-radius: 20px;
     border-bottom-right-radius: 20px;
     overflow: hidden;
+    min-height: 55px;
 
     .OneHalf {
         flex: 1;
+    }
+}
+
+.RecipeButtonsContainer.DisabledButtonsContainer {
+    filter: brightness(2);
+
+    .CustomButton:hover {
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+    .CustomButton:active {
+        filter: none;
     }
 }
 

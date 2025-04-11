@@ -16,7 +16,8 @@ import {
 import { Icon } from "../../common/common";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
-import { setPopup } from "../../redux/globalSlice";
+import { setGlobalLoading, setPopup } from "../../redux/globalSlice";
+import Resizer from "react-image-file-resizer";
 
 interface RecipeIface {
   id: number;
@@ -30,6 +31,7 @@ interface RecipeIface {
   image: string;
   tags: string[];
   portions: number;
+  meal_type: string;
 }
 
 interface FormError {
@@ -49,7 +51,6 @@ interface FormErrorsIface {
 
 const EditRecipe: React.FC = () => {
   const [result, set_result] = useState<boolean>(true);
-  const [isPostRequest, set_isPostRequest] = useState<boolean>(false);
   const [image, set_image] = useState<File | null>(null);
   const [originalImageName, set_originalImageName] = useState<string>("");
   const [allTags, set_allTags] = useState<AutocompleteOption[]>([]);
@@ -68,6 +69,7 @@ const EditRecipe: React.FC = () => {
     image: "",
     tags: [],
     portions: 2,
+    meal_type: "",
   });
 
   const [formErrors, set_formErrors] = useState<FormErrorsIface>({
@@ -129,6 +131,7 @@ const EditRecipe: React.FC = () => {
         image: respose.image,
         tags: [],
         portions: respose.portions ? respose.portions : 2,
+        meal_type: respose.meal_type,
       };
 
       set_image(respose.image);
@@ -153,8 +156,8 @@ const EditRecipe: React.FC = () => {
           recipe_ingredients_response[i].ingredient_id.toLocaleString()
         );
 
-        if (ingredient_data === undefined) {
-          return;
+        if (ingredient_data === undefined || ingredient_data[0] === undefined) {
+          continue;
         }
 
         recipe.ingredients.push({
@@ -217,7 +220,9 @@ const EditRecipe: React.FC = () => {
       set_selectedTags(recipe_tags);
     };
     if (id !== undefined) {
+      dispatch(setGlobalLoading(true));
       fetchRecipe();
+      dispatch(setGlobalLoading(false));
     }
     let recipe_cpy = { ...recipe, image: format_image_name(recipe.image) };
     set_recipe(recipe_cpy);
@@ -257,6 +262,10 @@ const EditRecipe: React.FC = () => {
 
     fetchTags();
   }, [recipe.tags, recipe.id, selectedTags]);
+
+  useEffect(() => {
+    dispatch(setGlobalLoading(false));
+  }, [recipe.title]);
 
   const update_ingredient_quantity = (index: number, quantity: number) => {
     const new_ingredients = [...recipe.ingredients];
@@ -410,7 +419,6 @@ const EditRecipe: React.FC = () => {
         message: "Title cannot be empty",
       };
       set_formErrors({ ...formErrors, title_error });
-      // document.getElementById("TitleError")?.focus();
       valid_input = false;
     }
 
@@ -427,25 +435,44 @@ const EditRecipe: React.FC = () => {
     } else {
       submitNewRecipe();
     }
+    dispatch(setGlobalLoading(false));
   };
 
   const dispatch = useDispatch();
 
+  const getFormattedIngredients = () => {
+    const formatted_ingredients: Ingredient[] = recipe.ingredients.map(
+      (ingredient) => {
+        return {
+          name: ingredient.name.toLocaleLowerCase(),
+          quantity: ingredient.quantity,
+          unit: ingredient.unit ? ingredient.unit.toLocaleLowerCase() : "",
+        };
+      }
+    );
+
+    return formatted_ingredients;
+  };
+
+  const getFormattedTags = () => {
+    const formatted_tags: string[] = recipe.tags.map((tag) => {
+      return tag.toLocaleLowerCase();
+    });
+
+    return formatted_tags;
+  };
+
   const openPopUp = (newId?: number) => {
     const message = result
-      ? `Successfully ${isPostRequest ? "created" : "updated"} recipe!`
-      : `Failed to ${isPostRequest ? "create" : "update"} recipe!`;
+      ? `Successfully ${id ? "updated" : "created"} recipe!`
+      : `Failed to ${id ? "update" : "create"} recipe!`;
     dispatch(
       setPopup({
         open: true,
         isError: !result,
         message: message,
         singleButton: result,
-        title: !result
-          ? "Error"
-          : isPostRequest
-          ? "Recipe created"
-          : "Recipe updated",
+        title: !result ? "Error" : id ? "Recipe updated" : "Recipe created",
         leftButtonText: result ? "Ok" : "Reload",
         rightButtonText: result ? "" : "Cancel",
         onClickLeft: result
@@ -462,15 +489,12 @@ const EditRecipe: React.FC = () => {
       title: recipe.title,
       description: recipe.description,
       instructions: recipe.instructions,
-      ingredients: recipe.ingredients,
+      ingredients: getFormattedIngredients(),
       image: originalImageName,
-      tags: recipe.tags,
+      tags: getFormattedTags(),
       portions: recipe.portions,
+      meal_type: recipe.meal_type,
     };
-
-    for (let i = 0; i < recipe_to_post.tags.length; i++) {
-      recipe_to_post.tags[i] = recipe_to_post.tags[i].toLowerCase();
-    }
 
     const serverIface = new ServerIface();
 
@@ -479,30 +503,45 @@ const EditRecipe: React.FC = () => {
         let image_name = format_image_name(image.name);
         set_originalImageName(image_name);
         recipe_to_post.image = image_name;
+
         let image_cpy = new File([image], image_name, { type: image.type });
-        set_image(image_cpy);
-        let res = serverIface.uploadImage(image_cpy);
+        resizeImage(image_cpy, IMAGE_MAX_SIZE).then((new_img) => {
+          set_image(new_img);
+          let res = serverIface.uploadImage(new_img);
+
+          res.then((res) => {
+            if (res.success) {
+              recipe_to_post.image = res.message;
+
+              if (id !== undefined) {
+                let final_res = serverIface.put_recipe(recipe_to_post, id);
+
+                final_res.then((final_res) => {
+                  if (final_res !== undefined && final_res.res.success) {
+                    set_result(true);
+                    openPopUp();
+                  } else {
+                    set_result(false);
+                  }
+                });
+              }
+            }
+          });
+        });
+      }
+    } else {
+      if (id !== undefined) {
+        let res = serverIface.put_recipe(recipe_to_post, id);
 
         res.then((res) => {
-          if (res.success) {
-            recipe_to_post.image = res.message;
+          if (res !== undefined && res.res.success) {
+            set_result(true);
+            openPopUp();
+          } else {
+            set_result(false);
           }
         });
       }
-    }
-
-    if (id !== undefined) {
-      let res = serverIface.put_recipe(recipe_to_post, id);
-
-      res.then((res) => {
-        set_isPostRequest(false);
-        if (res !== undefined && res.res.success) {
-          set_result(true);
-          openPopUp();
-        } else {
-          set_result(false);
-        }
-      });
     }
   };
 
@@ -513,40 +552,41 @@ const EditRecipe: React.FC = () => {
       title: recipe.title,
       description: recipe.description,
       instructions: recipe.instructions,
-      ingredients: recipe.ingredients,
+      ingredients: getFormattedIngredients(),
       image: "",
-      tags: recipe.tags,
+      tags: getFormattedTags(),
       portions: recipe.portions,
+      meal_type: recipe.meal_type,
     };
-    for (let i = 0; i < recipe_to_post.tags.length; i++) {
-      recipe_to_post.tags[i] = recipe_to_post.tags[i].toLowerCase();
-    }
+
     const serverIface = new ServerIface();
     if (image !== null) {
       let img_cpy = new File([image], format_image_name(image.name), {
         type: image.type,
       });
       set_image(img_cpy);
-      let img_res = serverIface.uploadImage(img_cpy);
 
-      img_res.then((img_res) => {
-        // console.log(img_res);
-        if (img_res.success) {
-          recipe_to_post.image = img_res.message;
-        } else {
-          console.log(result);
-          set_result(false);
-          return;
-        }
-        let res = serverIface.post_recipe(recipe_to_post);
-        res.then((result) => {
-          set_isPostRequest(false);
-          if (result.id > 0) {
-            set_result(true);
-            openPopUp(result.id);
-          } else {
-            console.log(result);
-            set_result(false);
+      let image_cpy = new File([image], image.name, { type: image.type });
+      resizeImage(image_cpy, IMAGE_MAX_SIZE).then((new_img) => {
+        set_image(new_img);
+        let res = serverIface.uploadImage(new_img);
+
+        res.then((res) => {
+          if (res.success) {
+            recipe_to_post.image = res.message;
+
+            if (id !== undefined) {
+              let final_res = serverIface.post_recipe(recipe_to_post);
+
+              final_res.then((final_res) => {
+                if (final_res !== undefined && final_res.id >= 0) {
+                  set_result(true);
+                  openPopUp(final_res.id);
+                } else {
+                  set_result(false);
+                }
+              });
+            }
           }
         });
       });
@@ -554,12 +594,10 @@ const EditRecipe: React.FC = () => {
       let res = serverIface.post_recipe(recipe_to_post);
 
       res.then((result) => {
-        set_isPostRequest(false);
-        if (result.id > 0) {
+        if (result !== undefined && result.id > 0) {
           set_result(true);
           openPopUp(result.id);
         } else {
-          console.log(result);
           set_result(false);
         }
       });
@@ -569,6 +607,29 @@ const EditRecipe: React.FC = () => {
   const TagsContainerClasses = classNames("TagsContainer", {
     EditRecipeInput: true,
   });
+
+  const IMAGE_MAX_SIZE = 1200;
+
+  const resizeImage = (image: File, maxSize: number): Promise<File> => {
+    return new Promise((resolve, reject) => {
+      Resizer.imageFileResizer(
+        image,
+        maxSize,
+        maxSize,
+        image.type.split("/")[1],
+        100,
+        0,
+        (uri) => {
+          if (uri instanceof File) {
+            resolve(uri);
+          } else {
+            reject(new Error("Failed to resize image"));
+          }
+        },
+        "file"
+      );
+    });
+  };
 
   return (
     <PageTemplate
@@ -629,6 +690,27 @@ const EditRecipe: React.FC = () => {
                     }}
                   />
                 </div>
+              </div>
+            </div>
+            <div className="EditRecipeRow">
+              <div className="EditRecipeLabel">Type:</div>
+              <div className="EditRecipeInput">
+                <select
+                  className="EditRecipeDropDown"
+                  value={recipe.meal_type}
+                  onChange={(e) =>
+                    set_recipe({ ...recipe, meal_type: e.target.value })
+                  }
+                >
+                  <option value="None">None</option>
+                  <option value="Breakfast">Breakfast</option>
+                  <option value="Lunch">Lunch</option>
+                  <option value="Soup">Soup</option>
+                  <option value="Dinner">Dinner</option>
+                  <option value="Dessert">Dessert</option>
+                  <option value="Baked">Baked</option>
+                  <option value="Snack">Snack</option>
+                </select>
               </div>
             </div>
             <div className="EditRecipeRow">

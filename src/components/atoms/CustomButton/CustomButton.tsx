@@ -9,10 +9,11 @@ interface CustomButtonProps {
   hoverLabel?: string;
   color?: string;
   background?: string;
-  textColor?: string;
   inverted?: boolean;
   round?: boolean;
   size?: string;
+  fontWeight?: number;
+  filter?: boolean;
   onClick: () => void;
 }
 
@@ -62,6 +63,10 @@ export class CustomButton extends Component<CustomButtonProps> {
       }
     };
 
+    const textClasses = classNames("CustomButtonText", {
+      CustomButtonTextFiltered: this.props.filter,
+    });
+
     return (
       <div
         onClick={this.props.onClick}
@@ -76,7 +81,16 @@ export class CustomButton extends Component<CustomButtonProps> {
             color={color}
           />
         ) : (
-          <p style={{ fontSize: getFontSize(), color }}>{this.props.label}</p>
+          <p
+            className={textClasses}
+            style={{
+              fontSize: getFontSize(),
+              color,
+              fontWeight: this.props.fontWeight ? this.props.fontWeight : 500,
+            }}
+          >
+            {this.props.label}
+          </p>
         )}
       </div>
     );

@@ -13,6 +13,7 @@ interface RecipeIface {
   created_at: string;
   user_id: number;
   image: string;
+  meal_type: string;
 }
 
 interface RecipeCardProps {
@@ -50,7 +51,11 @@ export class RecipeCard extends Component<RecipeCardProps, RecipeCardStates> {
     ) {
       let user_id = this.props.recipe_object.user_id;
       iface.get_search("user", user_id.toLocaleString()).then((response) => {
-        if (response[0].display_name !== undefined) {
+        if (
+          response !== undefined &&
+          response[0] !== undefined &&
+          response[0].display_name !== undefined
+        ) {
           this.setState({ author: response[0].display_name });
         }
       });
@@ -66,46 +71,26 @@ export class RecipeCard extends Component<RecipeCardProps, RecipeCardStates> {
   }
 
   render() {
-    const recipeCardClasses = classNames("RecipeCardContainer", {
-      RecipeCardDisabled: this.props.disabled,
-    });
     const addImageFallback = (
       event: SyntheticEvent<HTMLImageElement, Event>
     ) => {
       event.currentTarget.src = missing_picture_placeholder;
     };
 
-    if (this.props.disabled) {
-      return (
-        <div className={recipeCardClasses}>
-          <div className="RecipeCardImageContainer">
-            <img
-              src={this.state.image}
-              alt="Recipe"
-              onError={addImageFallback}
-            />
-          </div>
-          <div className="RecipeCardContentContainer">
-            <div className="RecipeCardTitleContainer">
-              <h3 className="RecipeCardTitle">
-                {Capitalize(this.props.recipe_object.title)}
-              </h3>
-            </div>
-            <div className="RecipeCardAuthorInfo">
-              <p>
-                By: <b>{Capitalize(this.state.author.toString())}</b>
-              </p>
-              <p>{FormatDate(this.props.recipe_object.created_at)}</p>
-            </div>
-          </div>
-        </div>
-      );
-    }
+    const recipeCardClasses = classNames("RecipeCardContainer", {
+      Breakfast: this.props.recipe_object.meal_type === "Breakfast",
+      Lunch: this.props.recipe_object.meal_type === "Lunch",
+      Soup: this.props.recipe_object.meal_type === "Soup",
+      Dinner: this.props.recipe_object.meal_type === "Dinner",
+      Dessert: this.props.recipe_object.meal_type === "Dessert",
+      Baked: this.props.recipe_object.meal_type === "Baked",
+      Snack: this.props.recipe_object.meal_type === "Snack",
+    });
 
     return (
       <NavLink
         to={"/recipe/" + this.props.recipe_object.id}
-        className="RecipeCardContainer"
+        className={recipeCardClasses}
       >
         <div className="RecipeCardImageContainer">
           <img src={this.state.image} alt="Recipe" onError={addImageFallback} />

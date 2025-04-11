@@ -22,7 +22,6 @@ const SearchDropdownItem: React.FC<SearchDropdownItemProps> = ({ id }) => {
     image: "",
   });
   const [image, setImage] = useState<string>("");
-  const [usePlaceholder, setUsePlaceholder] = useState<boolean>(true);
 
   useEffect(() => {
     const iface = new ServerIface();

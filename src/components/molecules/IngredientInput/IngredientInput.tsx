@@ -1,6 +1,7 @@
 import { Component } from "react";
 import { CustomButton } from "../../atoms/CustomButton/CustomButton";
 import "./IngredientInput.scss";
+import { Icon } from "../../../common/common";
 
 interface IngredientProps {
   name: string;
@@ -55,9 +56,13 @@ export class IngredientInput extends Component<IngredientProps> {
         />
         <div className="NewRecipeIngredientButtons">
           <CustomButton
-            label="-"
+            label={Icon.Remove}
             onClick={() => this.props.remove(this.props.id)}
+            size="small"
+            background="red"
+            fontWeight={900}
             inverted
+            filter
           />
         </div>
       </div>

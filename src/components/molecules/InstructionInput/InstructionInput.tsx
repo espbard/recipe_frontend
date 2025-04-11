@@ -1,6 +1,7 @@
 import { Component } from "react";
 import { CustomButton } from "../../atoms/CustomButton/CustomButton";
 import "./InstructionInput.scss";
+import { Icon } from "../../../common/common";
 
 interface InstructionProps {
   text: string;
@@ -45,10 +46,13 @@ export class InstructionInput extends Component<InstructionProps> {
             inverted
           />
           <CustomButton
-            label="-"
+            label={Icon.Remove}
             onClick={() => this.props.remove(this.props.id)}
             size="small"
+            background="red"
+            fontWeight={900}
             inverted
+            filter
           />
         </div>
       </div>

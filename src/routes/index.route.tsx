@@ -50,22 +50,8 @@ const AppRoutes = () => {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginRoute />} />
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/Recipe/:id"
-            element={
-              <ProtectedRoute>
-                <Recipe />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/" element={<Home />} />
+          <Route path="/Recipe/:id" element={<Recipe />} />
           <Route
             path="/NewRecipe"
             element={

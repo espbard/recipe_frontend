@@ -14,7 +14,9 @@ import {
   PopUpFunctions,
 } from "../../common/common";
 import { useAppDispatch } from "../../redux/hooks";
-import { setPopup } from "../../redux/globalSlice";
+import { setGlobalLoading, setPopup } from "../../redux/globalSlice";
+import classNames from "classnames";
+import Cookies from "js-cookie";
 
 interface RecipeIface {
   id: number;
@@ -28,6 +30,7 @@ interface RecipeIface {
   image: string;
   tags: string[];
   portions: number;
+  meal_type: string;
 }
 
 function FormatDate(date: string) {
@@ -63,14 +66,21 @@ const Recipe: React.FC = () => {
     image: "",
     tags: [],
     portions: 0,
+    meal_type: "",
   });
   const [author, setAuthor] = useState<string>("");
   const [originalPortions, setOriginalPortions] = useState<number>(0);
   const [activePortions, setActivePortions] = useState<number>(0);
   const [image, setImage] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [mealType, setMealType] = useState<string>("");
   const { id } = useParams();
   const dispatch = useAppDispatch();
+  const tokenCookie = Cookies.get("token");
+
+  useEffect(() => {
+    dispatch(setGlobalLoading(true));
+  }, []);
 
   const navigate = useNavigate();
 
@@ -79,10 +89,26 @@ const Recipe: React.FC = () => {
       const iface = new ServerIface();
       const recipe_data = await iface.get_search("recipe", id ? id : "0");
       if (recipe_data === undefined) {
+        dispatch(setGlobalLoading(false));
         return;
       }
 
       let response = recipe_data[0];
+
+      if (response === undefined || response.id === undefined) {
+        dispatch(setGlobalLoading(false));
+
+        dispatch(
+          setPopup({
+            open: true,
+            isError: true,
+            message: "Recipe not found",
+            onClickLeft: PopUpFunctions.HOME,
+            leftButtonText: "Go to home",
+          })
+        );
+        return;
+      }
 
       let recipe: RecipeIface = {
         id: response.id,
@@ -96,6 +122,7 @@ const Recipe: React.FC = () => {
         image: response.image,
         tags: [],
         portions: response.portions,
+        meal_type: response.meal_type ? response.meal_type : "N/A",
       };
 
       setOriginalPortions(response.portions);
@@ -106,6 +133,7 @@ const Recipe: React.FC = () => {
         recipe.id.toLocaleString()
       );
       if (recipe_ingredients_data === undefined) {
+        dispatch(setGlobalLoading(false));
         return;
       }
 
@@ -117,8 +145,8 @@ const Recipe: React.FC = () => {
           recipe_ingredients_response[i].ingredient_id.toLocaleString()
         );
 
-        if (ingredient_data === undefined) {
-          return;
+        if (ingredient_data === undefined || ingredient_data[0] === undefined) {
+          continue;
         }
 
         recipe.ingredients.push({
@@ -133,6 +161,7 @@ const Recipe: React.FC = () => {
         recipe.id.toLocaleString()
       );
       if (recipe_instructions_data === undefined) {
+        dispatch(setGlobalLoading(false));
         return;
       }
 
@@ -145,6 +174,7 @@ const Recipe: React.FC = () => {
         );
 
         if (instruction_data === undefined) {
+          dispatch(setGlobalLoading(false));
           return;
         }
 
@@ -156,6 +186,7 @@ const Recipe: React.FC = () => {
         recipe.id.toLocaleString()
       );
       if (recipe_tags_data === undefined) {
+        dispatch(setGlobalLoading(false));
         return;
       }
 
@@ -167,6 +198,7 @@ const Recipe: React.FC = () => {
           recipe_tags_response[i].tag_id
         );
         if (tag_data === undefined) {
+          dispatch(setGlobalLoading(false));
           return;
         } else {
           recipe.tags.push(tag_data[0].name);
@@ -179,6 +211,7 @@ const Recipe: React.FC = () => {
       }
 
       setRecipe(recipe);
+      dispatch(setGlobalLoading(false));
     };
 
     const fetchAuthor = async () => {
@@ -193,13 +226,15 @@ const Recipe: React.FC = () => {
     fetchRecipe();
     if (recipe.user_id === 0) return;
     fetchAuthor();
+
+    dispatch(setGlobalLoading(false));
   }, [recipe.user_id, id]);
 
   const openDeletePopUp = () => {
     dispatch(
       setPopup({
         open: true,
-        isError: false,
+        isError: true,
         message: "Are you sure you want to delete this recipe?",
         title: "Delete recipe",
         leftButtonText: "Yes",
@@ -218,6 +253,9 @@ const Recipe: React.FC = () => {
   };
 
   const getMultipliedIngredients = (quantity: number) => {
+    if (quantity === 0) {
+      return "";
+    }
     let multiplied_num = (quantity *= getIngredientMultiplier());
     return Math.round(multiplied_num * 100) / 100;
   };
@@ -228,9 +266,19 @@ const Recipe: React.FC = () => {
     }
   }, [recipe.description]);
 
+  useEffect(() => {
+    if (recipe.meal_type.length !== 0) {
+      setMealType(Capitalize(recipe.meal_type));
+    }
+  }, [recipe.meal_type]);
+
   const addImageFallback = (event: SyntheticEvent<HTMLImageElement, Event>) => {
     event.currentTarget.src = missing_picture_placeholder;
   };
+
+  const buttonContainerClasses = classNames("RecipeButtonsContainer", {
+    DisabledButtonsContainer: tokenCookie === undefined,
+  });
 
   return (
     <PageTemplate
@@ -238,7 +286,11 @@ const Recipe: React.FC = () => {
         <div id="RecipePage">
           <div className="RecipeContainer">
             <div className="RecipeImageContainer">
-              <img src={image} alt="Recipe" onError={addImageFallback} />
+              {image === null || image.length === 0 ? (
+                <img src={missing_picture_placeholder} />
+              ) : (
+                <img src={image} alt="Recipe" onError={addImageFallback} />
+              )}
             </div>
             <div className="Recipe">
               <div className="RecipeRow" id="RecipeTitleContainer">
@@ -251,6 +303,11 @@ const Recipe: React.FC = () => {
               </div>
 
               <div className="RecipeRow">
+                <div className="PortionsContainer">
+                  <h4 className="PortionsLabel">Category:</h4>
+                  <h6 className="MealTypeText">{mealType}</h6>
+                </div>
+
                 <div className="PortionsContainer">
                   <h4 className="PortionsLabel">Serves:</h4>
                   <h2 className="Portions">{activePortions}</h2>
@@ -313,13 +370,15 @@ const Recipe: React.FC = () => {
                   })}
                 </ol>
               </div>
-              <div className="RecipeRow" id="RecipInstructionsContainer">
+
+              <div className="RecipeRow">
                 <div className="TagsContainer">
                   {recipe.tags.map((tag) => (
                     <Tag key={tag} id={0} text={tag} />
                   ))}
                 </div>
               </div>
+
               <div id="RecipeInfoContainer">
                 <div className="RecipeInfo">
                   <p>Uploaded by: </p>
@@ -341,10 +400,11 @@ const Recipe: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className="RecipeButtonsContainer">
+            <div className={buttonContainerClasses}>
               <div className="OneHalf">
                 <CustomButton
                   onClick={() => {
+                    if (tokenCookie === undefined) return;
                     navigate("/recipe/edit/" + id);
                   }}
                   label={Icon.Edit}
@@ -352,7 +412,10 @@ const Recipe: React.FC = () => {
               </div>
               <div className="OneHalf">
                 <CustomButton
-                  onClick={openDeletePopUp}
+                  onClick={() => {
+                    if (tokenCookie === undefined) return;
+                    openDeletePopUp();
+                  }}
                   label={Icon.Delete}
                   background="red"
                   color="almost-white"

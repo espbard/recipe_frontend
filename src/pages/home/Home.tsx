@@ -16,10 +16,10 @@ const Home: React.FC = () => {
 
       // Simulate an async operation, e.g., fetching data
       const content = await new Promise<JSX.Element>((resolve) =>
-        setTimeout(() => resolve(<RecipeList />), 1000)
+        setTimeout(() => resolve(<RecipeList key="recipe-list" />), 1000)
       );
 
-      // dispatch(setGlobalLoading(false));
+      dispatch(setGlobalLoading(false));
       return content;
     };
 

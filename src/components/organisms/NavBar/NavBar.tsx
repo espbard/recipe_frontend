@@ -9,20 +9,18 @@ import { useAppDispatch } from "../../../redux/hooks";
 import SearchDropdown from "../../molecules/SearchDropdown/SearchDropdown";
 import ServerIface from "../../../ServerIface";
 import { ListItem } from "../../../common/common";
+import { useNavigate } from "react-router-dom";
 
 const NavBar: React.FC = () => {
-  const [token, setToken] = useState("");
   const [recipeList, setRecipeList] = useState<ListItem[]>([]);
   const [currentSearchStr, setCurrentSearchStr] = useState("");
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const currentPage = window.location.pathname;
+  const tokenCookie = Cookies.get("token");
 
   useEffect(() => {
-    const tokenCookie = Cookies.get("token");
     const iface = new ServerIface();
-
-    if (tokenCookie === undefined) {
-      return;
-    }
 
     let recipes: ListItem[] = [];
     iface.get("recipes").then((res) => {
@@ -36,8 +34,6 @@ const NavBar: React.FC = () => {
       }
     });
     setRecipeList(recipes);
-
-    setToken(tokenCookie || "");
   }, []);
 
   return (
@@ -48,8 +44,8 @@ const NavBar: React.FC = () => {
         </div>
         <h4 className="NavBarTitle">Our Recipes ❤️</h4>
       </div>
-      {token && (
-        <div id="NavBarEnd">
+      <div id="NavBarEnd">
+        {currentPage !== "/login" && (
           <div id="NavBarSearch">
             <input
               type="text"
@@ -65,13 +61,20 @@ const NavBar: React.FC = () => {
               <SearchDropdown list={recipeList} search_str={currentSearchStr} />
             )}
           </div>
+        )}
+        {tokenCookie && (
           <div style={{ display: "flex" }}>
             <div id="NavBarLogoutLink">
               <LogoutLink />
             </div>
           </div>
-        </div>
-      )}
+        )}
+        {!tokenCookie && currentPage !== "/login" && (
+          <div className="NavBarLogin">
+            <a onClick={() => navigate("/login")}>Log In</a>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

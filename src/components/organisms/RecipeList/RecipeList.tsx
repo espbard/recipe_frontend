@@ -9,6 +9,7 @@ import FiltersBar from "../FiltersBar/FiltersBar";
 import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "../../../redux/globalSlice";
 import FilteredRecipeList from "../../molecules/FilteredRecipeList/FilteredRecipeList";
+import Cookies from "js-cookie";
 
 const RecipeList: React.FC = () => {
   const [recipes, setRecipes] = useState<any[]>([]);
@@ -17,22 +18,30 @@ const RecipeList: React.FC = () => {
     (state) => state.global.selectedIngredients
   );
   const selectedTags = useAppSelector((state) => state.global.selectedTags);
+  const selectedMealType = useAppSelector(
+    (state) => state.global.selectedMealType
+  );
   const search_str = useAppSelector((state) => state.global.search_str);
   const dispatch = useDispatch();
+  const user_token = Cookies.get("token");
 
   useEffect(() => {
     const fetchRecipes = async () => {
+      // dispatch(setGlobalLoading(true));
       const iface = new ServerIface();
+
       const data = iface.get("recipes");
 
       let temp_recipes: any[] = [];
 
       if (data === undefined) {
+        // dispatch(setGlobalLoading(false));
         return;
       }
 
       let res = await data.then((res: any) => {
         if (res === undefined) {
+          // dispatch(setGlobalLoading(false));
           return [];
         }
         return res;
@@ -107,6 +116,13 @@ const RecipeList: React.FC = () => {
       return true;
     };
 
+    const filterMealType = (type: string) => {
+      if (selectedMealType == "" || type == selectedMealType) {
+        return true;
+      }
+      return false;
+    };
+
     const filterBySearchStr = (title: any) => {
       if (search_str === undefined || search_str.length === 0) {
         return true;
@@ -120,40 +136,56 @@ const RecipeList: React.FC = () => {
       if (
         filterIngredients(recipes[i].ingredients) &&
         filterTags(recipes[i].tags) &&
+        filterMealType(recipes[i].meal_type) &&
         filterBySearchStr(recipes[i].title)
       ) {
         recipeList.push(recipes[i]);
       }
     }
     setFilteredRecipes(recipeList);
-    dispatch(setGlobalLoading(false));
-  }, [selectedIngredients, selectedTags, search_str, recipes, dispatch]);
+  }, [
+    selectedIngredients,
+    selectedTags,
+    selectedMealType,
+    search_str,
+    recipes,
+    dispatch,
+  ]);
 
   useEffect(() => {
-    const getFilteredRecipes = async () => {
-      dispatch(setGlobalLoading(true));
+    if (filteredRecipes !== null && filteredRecipes.length !== 0) {
+      const getFilteredRecipes = async () => {
+        // Simulate an async operation, e.g., fetching data
+        const content = await new Promise<JSX.Element>((resolve) =>
+          setTimeout(
+            () => resolve(<FilteredRecipeList content={filteredRecipes} />),
+            1000
+          )
+        );
 
-      // Simulate an async operation, e.g., fetching data
-      const content = await new Promise<JSX.Element>((resolve) =>
-        setTimeout(
-          () => resolve(<FilteredRecipeList content={filteredRecipes} />),
-          1000
-        )
-      );
+        return content;
+      };
 
-      dispatch(setGlobalLoading(false));
-      return content;
-    };
+      const fetchContent = async () => {
+        const loadedContent = await getFilteredRecipes();
+        setContent(loadedContent);
+      };
 
-    const fetchContent = async () => {
-      const loadedContent = await getFilteredRecipes();
-      setContent(loadedContent);
-    };
-
-    fetchContent();
+      fetchContent();
+    }
   }, [filteredRecipes, dispatch]);
 
   const [content, setContent] = React.useState<JSX.Element | null>(null);
+
+  useEffect(() => {
+    dispatch(setGlobalLoading(true));
+  }, []);
+
+  useEffect(() => {
+    if (content !== null) {
+      dispatch(setGlobalLoading(false));
+    }
+  }, [dispatch, content]);
 
   const navigate = useNavigate();
 
@@ -163,14 +195,16 @@ const RecipeList: React.FC = () => {
 
   return (
     <div>
-      <div className="NewRecipeButtonContainer">
-        <CustomButton
-          label={Icon.Add}
-          onClick={handleClick}
-          round
-          size="large"
-        />
-      </div>
+      {user_token && (
+        <div className="NewRecipeButtonContainer">
+          <CustomButton
+            label={Icon.Add}
+            onClick={handleClick}
+            round
+            size="medium"
+          />
+        </div>
+      )}
 
       <div id="FiltersBarContainer">
         <FiltersBar />
@@ -184,9 +218,6 @@ const RecipeList: React.FC = () => {
         ) : (
           <div className="RecipesContainer">
             {content}
-            {/* {filteredRecipes.map((recipe) => {
-              return <RecipeCard key={recipe.id} recipe_object={recipe} />;
-            })} */}
             <p>{filteredRecipes.length} results</p>
           </div>
         )}

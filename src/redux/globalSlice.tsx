@@ -8,6 +8,7 @@ interface GlobalState {
   };
   selectedIngredients: ListItem[];
   selectedTags: ListItem[];
+  selectedMealType: string;
   search_str: string;
   server_connection: boolean;
   loading: boolean;
@@ -33,6 +34,7 @@ const initialState: GlobalState = {
   },
   selectedIngredients: [],
   selectedTags: [],
+  selectedMealType: "",
   search_str: "",
   server_connection: false,
   loading: false,
@@ -104,6 +106,9 @@ export const globalSlice = createSlice({
     setSelectedTags: (state: any, action: PayloadAction<ListItem[]>) => {
       state.selectedTags = action.payload;
     },
+    setSelectedMealType: (state: any, action: PayloadAction<string>) => {
+      state.selectedMealType = action.payload;
+    },
     setSearchStr: (state: any, action: PayloadAction<string>) => {
       state.search_str = action.payload;
     },
@@ -125,6 +130,7 @@ export const {
   setError,
   setSelectedIngredients,
   setSelectedTags,
+  setSelectedMealType,
   setSearchStr,
   setServerConnection,
   setLoading,

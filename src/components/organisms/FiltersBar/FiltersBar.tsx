@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import {
   setSelectedIngredients,
   setSelectedTags,
+  setSelectedMealType,
 } from "../../../redux/globalSlice";
 import ServerIface from "../../../ServerIface";
 
@@ -19,7 +20,18 @@ const FiltersBar: React.FC = () => {
   );
   const [tagsList, setTagsList] = useState<ListItem[]>([]);
   const selectedTags = useAppSelector((state) => state.global.selectedTags);
+  const selectedMeal = useAppSelector((state) => state.global.selectedMealType);
   const dispatch = useAppDispatch();
+
+  const mealTypes: ListItem[] = [
+    { name: "Breakfast", id: 0 },
+    { name: "Lunch", id: 1 },
+    { name: "Soup", id: 2 },
+    { name: "Dinner", id: 3 },
+    { name: "Dessert", id: 4 },
+    { name: "Baked", id: 5 },
+    { name: "Snack", id: 6 },
+  ];
 
   const selectIngredient = (value: string) => {
     let selectedIngredientsCpy: ListItem[] = [];
@@ -64,6 +76,28 @@ const FiltersBar: React.FC = () => {
 
   const clearSelectedIngredients = () => {
     dispatch(setSelectedIngredients([]));
+  };
+
+  const selectMealType = (value: string) => {
+    dispatch(setSelectedMealType(value));
+  };
+
+  const unSelectMealType = (_value: string) => {
+    dispatch(setSelectedMealType(""));
+  };
+
+  const unSelectMealTypes = () => {
+    dispatch(setSelectedMealType(""));
+  };
+
+  const listItemFromString = (value: string) => {
+    if (value === "") return [];
+    return [
+      {
+        name: value,
+        id: 0,
+      },
+    ];
   };
 
   const selectTag = (value: string) => {
@@ -173,7 +207,9 @@ const FiltersBar: React.FC = () => {
           </div>
         )}
 
-        {(selectedIngredients.length > 0 || selectedTags.length > 0) && (
+        {(selectedIngredients.length > 0 ||
+          selectedTags.length > 0 ||
+          selectedMeal !== "") && (
           <div className="FilterDotContainer">
             <p className="FilterDot">{Icon.Dot}</p>
           </div>
@@ -197,6 +233,14 @@ const FiltersBar: React.FC = () => {
               unSelectOption={unSelectTag}
               selectedItems={selectedTags}
               clearSelection={clearSelectedTags}
+            />
+            <SearchItem
+              label="Meal"
+              list={mealTypes}
+              selectOption={selectMealType}
+              unSelectOption={unSelectMealType}
+              selectedItems={listItemFromString(selectedMeal)}
+              clearSelection={unSelectMealTypes}
             />
           </div>
         </div>
