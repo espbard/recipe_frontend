@@ -164,25 +164,20 @@ const FiltersBar: React.FC = () => {
     ];
   };
 
-  const selectTag = (value: string) => {
+  const selectTag = (value: string, id?: number) => {
     let selectedTagsCpy: ListItem[] = [];
 
-    let exists = false;
-    let index = 0;
     selectedTags.forEach((o) => {
       selectedTagsCpy.push({
         name: o.name,
-        id: index++,
+        id: o.id,
       });
-      if (o.name === value) {
-        exists = true;
-      }
     });
 
-    if (!exists) {
+    if (id !== undefined) {
       selectedTagsCpy.push({
         name: value,
-        id: index++,
+        id: id,
       });
     }
 
@@ -192,12 +187,11 @@ const FiltersBar: React.FC = () => {
   const unSelectTag = (value: string) => {
     let selectedTagsCpy: ListItem[] = [];
 
-    let index = 0;
     selectedTags.forEach((o) => {
       if (o.name !== value) {
         selectedTagsCpy.push({
           name: o.name,
-          id: index++,
+          id: o.id,
         });
       }
     });
@@ -237,7 +231,7 @@ const FiltersBar: React.FC = () => {
       } else {
         for (var i = 0; i < data.length; i++) {
           tags.push({
-            id: i,
+            id: data[i].id,
             name: data[i].name,
           });
         }

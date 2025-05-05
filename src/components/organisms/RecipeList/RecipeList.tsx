@@ -20,9 +20,7 @@ import HouseIcon from "../../../assets/images/house-svg.svg";
 import { RecipeIface, ListItem } from "../../../common/common";
 
 const RecipeList: React.FC = () => {
-  const [selectedTagsExtended, setSelectedTagsExtended] = useState<ListItem[]>(
-    []
-  );
+  const [allTags, setTags] = useState<ListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [filteredRecipes, setFilteredRecipes] = useState<RecipeIface[]>([]);
   const selectedIngredients = useAppSelector(
@@ -58,49 +56,6 @@ const RecipeList: React.FC = () => {
   };
 
   useEffect(() => {
-    setSelectedTagsExtended([]);
-
-    let temp_tags = [...selectedTags];
-
-    let hasVegan = false;
-    let hasPescetarian = false;
-    let hasVegetarian = false;
-
-    for (let i = 0; i < selectedTags.length; i++) {
-      if (selectedTags[i].name.toLowerCase() === "vegan") {
-        hasVegan = true;
-      }
-      if (selectedTags[i].name.toLowerCase() === "pescetarian") {
-        hasPescetarian = true;
-      }
-      if (selectedTags[i].name.toLowerCase() === "vegetarian") {
-        hasVegetarian = true;
-      }
-    }
-
-    if (hasVegan && !hasPescetarian) {
-      temp_tags.push({
-        id: selectedTags.length,
-        name: "Pescetarian",
-      });
-    }
-    if (hasVegan && !hasVegetarian) {
-      temp_tags.push({
-        id: selectedTags.length,
-        name: "Vegetarian",
-      });
-    }
-    if (hasPescetarian && !hasVegetarian) {
-      temp_tags.push({
-        id: selectedTags.length,
-        name: "Vegetarian",
-      });
-    }
-
-    setSelectedTagsExtended(temp_tags);
-  }, [selectedTags]);
-
-  useEffect(() => {
     const fetchRecipes = async () => {
       const iface = new ServerIface();
 
@@ -131,46 +86,29 @@ const RecipeList: React.FC = () => {
         return res;
       });
       for (let i = 0; i < res.length; i++) {
-        var ingredientsList: string[] = [];
+        var ingredientsList: number[] = [];
 
         iface
           .get_search("recipe_ingredients", res[i].id)
           .then((r_i_res: any) => {
             if (r_i_res !== undefined) {
               for (let j = 0; j < r_i_res.length; j++) {
-                ingredientsList.push(r_i_res[j].ingredient_id);
+                if (r_i_res[j].ingredient_id !== undefined) {
+                  ingredientsList = [
+                    ...ingredientsList,
+                    r_i_res[j].ingredient_id,
+                  ];
+                }
               }
             }
           });
 
-        // let recipe_i_res = await recipe_ingredients.then((res: any) => {
-        //   return res;
-        // });
-
-        // for (let j = 0; j < recipe_i_res.length; j++) {
-        //   let ingredient_id = recipe_i_res[j].ingredient_id;
-
-        //   const ingredient = iface.get_search("ingredient", ingredient_id);
-        //   let i_res = await ingredient.then((res: any) => {
-        //     return res;
-        //   });
-
-        //   // for (let k = 0; k < i_res.length; k++) {
-        //   //   ingredientsList.push(i_res[k].name);
-        //   // }
-        // }
-
-        var tagsList: string[] = [];
+        var tagsList: number[] = [];
         const recipe_tags = iface.get_search("recipe_tags", res[i].id);
         let recipe_t_res = await recipe_tags.then((res: any) => res);
         for (let j = 0; j < recipe_t_res.length; j++) {
-          let tag_id = recipe_t_res[j].tag_id;
-
-          const tag = iface.get_search("tag", tag_id);
-          let t_res = await tag.then((res: any) => res);
-
-          for (let k = 0; k < t_res.length; k++) {
-            tagsList.push(t_res[k].name);
+          if (recipe_t_res[j].tag_id !== undefined) {
+            tagsList = [...tagsList, recipe_t_res[j].tag_id];
           }
         }
 
@@ -221,9 +159,29 @@ const RecipeList: React.FC = () => {
         return true;
       };
 
-      const filterTags = (tags: any) => {
+      const hasTag = (tags: number[], name: string) => {
+        for (let j = 0; j < tags.length; j++) {
+          if (allTags.some((tag) => tag.id === tags[j] && tag.name === name)) {
+            return true;
+          }
+        }
+        return false;
+      };
+
+      const filterTags = (tags: number[]) => {
         for (let i = 0; i < selectedTags.length; i++) {
-          if (tags && !tags.includes(selectedTags[i].name)) {
+          if (tags && !tags.includes(selectedTags[i].id)) {
+            if (selectedTags[i].name === "vegetarian") {
+              if (hasTag(tags, "pescetarian")) {
+                return true;
+              } else if (hasTag(tags, "vegan")) {
+                return true;
+              }
+            } else if (selectedTags[i].name === "pescetarian") {
+              if (hasTag(tags, "vegan")) {
+                return true;
+              }
+            }
             return false;
           }
         }
@@ -255,7 +213,7 @@ const RecipeList: React.FC = () => {
         }
         if (
           filterIngredients(globalRecipes[i].ingredients) &&
-          filterTags(globalRecipes[i].tags) &&
+          filterTags(globalRecipes[i].tags ?? []) &&
           filterMealType(globalRecipes[i].meal_type || "") &&
           filterBySearchStr(globalRecipes[i].title)
         ) {
@@ -306,6 +264,16 @@ const RecipeList: React.FC = () => {
 
   useEffect(() => {
     dispatch(setGlobalLoading(true));
+    const fetchTags = async () => {
+      const iface = new ServerIface();
+
+      iface.get("tags").then((res) => {
+        if (res !== undefined) {
+          setTags(res);
+        }
+      });
+    };
+    fetchTags();
   }, []);
 
   useEffect(() => {

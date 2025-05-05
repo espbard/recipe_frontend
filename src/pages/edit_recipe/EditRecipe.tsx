@@ -16,11 +16,7 @@ import {
 import { Icon } from "../../common/common";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
-import {
-  setGlobalLoading,
-  setPopup,
-  setRecipeList,
-} from "../../redux/globalSlice";
+import { setGlobalLoading, setPopup } from "../../redux/globalSlice";
 import Resizer from "react-image-file-resizer";
 
 interface RecipeIface {
@@ -739,7 +735,7 @@ const EditRecipe: React.FC = () => {
             <div className="EditRecipeRow">
               <div className="EditRecipeLabel">Description:</div>
               <textarea
-                value={recipe.description}
+                value={recipe.description ?? ""}
                 onChange={(e) =>
                   set_recipe({ ...recipe, description: e.target.value })
                 }

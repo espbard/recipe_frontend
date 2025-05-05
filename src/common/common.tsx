@@ -27,7 +27,7 @@ interface RecipeIface {
   description: string | null;
   ingredients: number[] | null;
   instructions: string[] | null;
-  tags: string[] | null;
+  tags: number[] | null;
   image: string | null;
   portions: number | null;
   created_at: string | null;
