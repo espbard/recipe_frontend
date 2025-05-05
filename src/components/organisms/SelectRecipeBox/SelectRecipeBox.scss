@@ -1,0 +1,117 @@
+.SelectRecipeBoxOverlay {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.4);
+
+    .SelectRecipeBoxContainer {
+        width: 80%;
+        height: 600px;
+        max-height: 80%;
+        max-width: 550px;
+        background: var(--color-white);
+        border-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        // padding: 4%;
+
+        .CloseIcon {
+            width: 100%;
+            height: 0;
+            margin: 0;
+            overflow: visible;
+            cursor: pointer;
+
+            .CloseIconText {
+                margin-left: auto;
+                margin-bottom: auto;
+                margin-right: -20px;
+                margin-top: -20px;
+                border: 2px solid var(--color-white);
+                padding: 5px;
+                width: 30px;
+                height: 30px;
+                background: var(--color-midnight-green);
+                color: var(--color-white);
+                border-radius: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .CloseIconText:hover {
+                box-shadow: inset 0 0 15px 8px rgba(0, 0, 0, 0.3);
+            }
+
+            .CloseIconText:active {
+                filter: brightness(1.3);
+            }
+        }
+
+        .SelectRecipeBoxTitle {
+            color: var(--color-midnight-green);
+            margin: 20px;
+            text-align: center;
+            margin-top: 5px;
+            margin-bottom: 0;
+            flex: 1;
+        }
+
+        .SelectRecipeBoxInput {
+            padding-left: 5px;
+            padding-right: 5px;
+            font-size: var(--font-size-medium);
+            border-radius: 4px;
+            margin-bottom: 10px;
+            margin-left: 20px;
+            margin-right: 20px;
+            // width: 100%;
+            flex: 0.5;
+        }
+
+        .SelectRecipeList {
+            border: 2px dotted black;
+            border-radius: 5px;
+            // max-height: 300px;
+            margin-left: 20px;
+            margin-right: 20px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            flex: 5;
+
+            .SelectRecipeListItem {
+                display: flex;
+                align-items: center;
+                background: var(--color-almost-white);
+                margin-top: 1px;
+                cursor: pointer;
+
+
+                .SelectRecipeListItemImage {
+                    width: 50px;
+                    height: 50px;
+                    border-radius: 10px;
+                    margin-right: 10px;
+                    margin-left: 10px;
+                    object-fit: cover;
+                }
+            }
+
+            .SelectRecipeListItem:hover {
+                filter: brightness(0.95);
+            }
+        }
+
+        .SelectRecipeList.EmptyList {
+            border: none;
+        }
+    }
+
+
+}

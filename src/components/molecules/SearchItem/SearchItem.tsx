@@ -7,7 +7,7 @@ interface SearchItemProps {
   label: string | undefined;
   list: ListItem[];
   selectedItems: ListItem[];
-  selectOption: (value: string) => void;
+  selectOption: (value: string, id?: number) => void;
   unSelectOption: (value: string) => void;
   clearSelection: () => void;
 }

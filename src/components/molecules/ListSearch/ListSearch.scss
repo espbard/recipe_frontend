@@ -50,6 +50,11 @@
             /* IE 10 and IE 11 */
             user-select: none;
             /* Standard syntax */
+
+            img {
+                width: 30px;
+                height: 30px;
+            }
         }
 
         .ListSearchInputClear:hover {

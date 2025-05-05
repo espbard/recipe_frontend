@@ -17,8 +17,7 @@
         animation-iteration-count: 5;
     }
 
-    #ErrorPageReload {
-        color: var(--color-almost-white);
+    .ErrorPageIcon {
         margin-left: auto;
         margin-right: auto;
         background: transparent;
@@ -46,11 +45,15 @@
 
     }
 
-    #ErrorPageReload:hover {
+    .ErrorPageReload {
+        color: var(--color-almost-white);
+    }
+
+    .ErrorPageIcon:hover {
         text-shadow: 1px 1px 2px black, 0 0 1em black, 0 0 0.2em black;
     }
 
-    #ErrorPageReload:active {
+    .ErrorPageReload:active {
         p {
             animation: rotate 0.5s;
             animation-iteration-count: 1;

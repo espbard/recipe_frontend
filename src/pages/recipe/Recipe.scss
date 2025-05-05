@@ -58,7 +58,10 @@
             color: var(--color-almost-black);
             padding-bottom: 15px;
             padding-top: 15px;
+        }
 
+        .RecipeRow.BottomRow {
+            border-bottom: none;
         }
 
         .PortionsContainer {
@@ -119,6 +122,38 @@
 
         .RecipeSubTitle {
             color: var(--color-midnight-green);
+        }
+
+        #RecipeLinkContainer {
+            .RecipeLinkRow {
+                display: grid;
+                // background: orange;
+                max-width: 95%;
+
+                .RecipeLink {
+                    padding-top: 10px;
+                    word-break: break-all;
+                    grid-row: 1;
+                    grid-column: 1;
+                    z-index: 2;
+                    display: flex;
+                    align-items: center;
+                    color: var(--color-cerulean);
+                }
+
+                img {
+                    display: flex;
+                    align-items: center;
+                    grid-row: 1;
+                    grid-column: 1;
+                    width: 50px;
+                    height: 50px;
+                    opacity: 0.5;
+                    margin-top: -40px;
+                    margin-left: auto;
+                    filter: invert(32%) sepia(98%) saturate(927%) hue-rotate(181deg) brightness(93%) contrast(92%);
+                }
+            }
         }
 
         #RecipeDescriptionContainer {

@@ -1,27 +1,53 @@
 import { useState, useEffect } from "react";
-import FilterSvg from "../../../assets/images/filter.svg";
-import CloseSvg from "../../../assets/images/x-symbol.svg";
-import "./FiltersBar.scss";
 import SearchItem from "../../molecules/SearchItem/SearchItem";
-import { Icon, ListItem } from "../../../common/common";
+import { ListItem } from "../../../common/common";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import {
   setSelectedIngredients,
+  setSelectedAdvancedIngredients,
   setSelectedTags,
   setSelectedMealType,
+  setOnlyShowExternal,
 } from "../../../redux/globalSlice";
 import ServerIface from "../../../ServerIface";
+import Filters from "../Filters/Filters";
+import IngredientFilters from "../IngredientFilters/IngredientFilters";
+import "./FiltersBar.scss";
+import ExternalFilter from "../ExternalFilter/ExternalFilter";
+import { Checkbox } from "@mui/material";
+
+enum FilterType {
+  FILTERS = "FILTERS",
+  EXTERNAL = "EXTERNAL",
+  INGREDIENTS = "INGREDIENTS",
+  NONE = "NONE",
+}
 
 const FiltersBar: React.FC = () => {
-  const [collapsed, setCollapsed] = useState(true);
+  const [openFilter, setOpenFilter] = useState(FilterType.NONE);
+
   const [ingredientsList, setIngredientsList] = useState<ListItem[]>([]);
+  const [advancedIngredientsList, setAdvancedIngredientsList] = useState<
+    ListItem[]
+  >([]);
   const selectedIngredients = useAppSelector(
     (state) => state.global.selectedIngredients
   );
+  const selectedAdvancedIngredients = useAppSelector(
+    (state) => state.global.selectedAdvancedIngredients
+  );
   const [tagsList, setTagsList] = useState<ListItem[]>([]);
+  const onlyShowExternal = useAppSelector(
+    (state) => state.global.onlyShowExternal
+  );
   const selectedTags = useAppSelector((state) => state.global.selectedTags);
   const selectedMeal = useAppSelector((state) => state.global.selectedMealType);
   const dispatch = useAppDispatch();
+
+  const setFiltersOpen = () => setOpenFilter(FilterType.FILTERS);
+  const setExternalOpen = () => setOpenFilter(FilterType.EXTERNAL);
+  const setIngredientsOpen = () => setOpenFilter(FilterType.INGREDIENTS);
+  const setNoneOpen = () => setOpenFilter(FilterType.NONE);
 
   const mealTypes: ListItem[] = [
     { name: "Breakfast", id: 0 },
@@ -31,42 +57,57 @@ const FiltersBar: React.FC = () => {
     { name: "Dessert", id: 4 },
     { name: "Baked", id: 5 },
     { name: "Snack", id: 6 },
+    { name: "Side", id: 7 },
   ];
 
-  const selectIngredient = (value: string) => {
+  const selectIngredient = (value: string, id?: number) => {
     let selectedIngredientsCpy: ListItem[] = [];
 
-    let exists = false;
-    let index = 0;
-    selectedIngredients.forEach((o) => {
+    for (let i = 0; i < selectedIngredients.length; i++) {
       selectedIngredientsCpy.push({
-        name: o.name,
-        id: index++,
+        name: selectedIngredients[i].name,
+        id: selectedIngredients[i].id,
       });
-      if (o.name === value) {
-        exists = true;
-      }
-    });
+    }
 
-    if (!exists) {
+    if (id !== undefined) {
       selectedIngredientsCpy.push({
         name: value,
-        id: index++,
+        id: id,
       });
     }
 
     dispatch(setSelectedIngredients(selectedIngredientsCpy));
   };
 
+  const selectAdvancedIngredient = (value: string, id?: number) => {
+    let selectAdvancedIngredientsCpy: ListItem[] = [];
+
+    selectedAdvancedIngredients.forEach((o) => {
+      selectAdvancedIngredientsCpy.push({
+        name: o.name,
+        id: o.id,
+      });
+    });
+
+    if (id !== undefined) {
+      selectAdvancedIngredientsCpy.push({
+        name: value,
+        id: id,
+      });
+    }
+
+    dispatch(setSelectedAdvancedIngredients(selectAdvancedIngredientsCpy));
+  };
+
   const unSelectIngredient = (value: string) => {
     let selectedIngredientsCpy: ListItem[] = [];
 
-    let index = 0;
     selectedIngredients.forEach((o) => {
       if (o.name !== value) {
         selectedIngredientsCpy.push({
           name: o.name,
-          id: index++,
+          id: o.id,
         });
       }
     });
@@ -74,8 +115,27 @@ const FiltersBar: React.FC = () => {
     dispatch(setSelectedIngredients(selectedIngredientsCpy));
   };
 
+  const unSelectAdvancedIngredient = (value: string) => {
+    let selectedAdvancedIngredientsCpy: ListItem[] = [];
+
+    selectedAdvancedIngredients.forEach((o) => {
+      if (o.name !== value) {
+        selectedAdvancedIngredientsCpy.push({
+          name: o.name,
+          id: o.id,
+        });
+      }
+    });
+
+    dispatch(setSelectedAdvancedIngredients(selectedAdvancedIngredientsCpy));
+  };
+
   const clearSelectedIngredients = () => {
     dispatch(setSelectedIngredients([]));
+  };
+
+  const clearSelectedAdvancedIngredients = () => {
+    dispatch(setSelectedAdvancedIngredients([]));
   };
 
   const selectMealType = (value: string) => {
@@ -88,6 +148,10 @@ const FiltersBar: React.FC = () => {
 
   const unSelectMealTypes = () => {
     dispatch(setSelectedMealType(""));
+  };
+
+  const setSelectShowExternal = (value: boolean) => {
+    dispatch(setOnlyShowExternal(value));
   };
 
   const listItemFromString = (value: string) => {
@@ -155,11 +219,12 @@ const FiltersBar: React.FC = () => {
       } else {
         for (var i = 0; i < data.length; i++) {
           ingredients.push({
-            id: i,
+            id: data[i].id,
             name: data[i].name,
           });
         }
         setIngredientsList(ingredients);
+        setAdvancedIngredientsList(ingredients);
       }
     };
 
@@ -186,36 +251,26 @@ const FiltersBar: React.FC = () => {
 
   return (
     <div id="FiltersBar">
-      <div className="FilterIconContainer">
-        {!collapsed ? (
-          <div className="FilterIcon IconExtraPadding">
-            <img
-              src={CloseSvg}
-              onClick={() => setCollapsed(true)}
-              tabIndex={0}
-              alt="Close"
-            />
-          </div>
-        ) : (
-          <div className="FilterIcon">
-            <img
-              src={FilterSvg}
-              onClick={() => setCollapsed(false)}
-              tabIndex={0}
-              alt="Filter"
-            />
-          </div>
-        )}
-
-        {(selectedIngredients.length > 0 ||
-          selectedTags.length > 0 ||
-          selectedMeal !== "") && (
-          <div className="FilterDotContainer">
-            <p className="FilterDot">{Icon.Dot}</p>
-          </div>
-        )}
+      <div className="FiltersBarButtons">
+        <Filters
+          isOpen={openFilter === FilterType.FILTERS}
+          open={setFiltersOpen}
+          close={setNoneOpen}
+          disabled={onlyShowExternal}
+        />
+        <ExternalFilter
+          isOpen={openFilter === FilterType.EXTERNAL}
+          open={setExternalOpen}
+          close={setNoneOpen}
+        />
+        <IngredientFilters
+          isOpen={openFilter === FilterType.INGREDIENTS}
+          open={setIngredientsOpen}
+          close={setNoneOpen}
+          disabled={onlyShowExternal}
+        />
       </div>
-      {!collapsed && (
+      {openFilter === FilterType.FILTERS && (
         <div className="HidableFilters">
           <div>
             <SearchItem
@@ -241,6 +296,34 @@ const FiltersBar: React.FC = () => {
               unSelectOption={unSelectMealType}
               selectedItems={listItemFromString(selectedMeal)}
               clearSelection={unSelectMealTypes}
+            />
+          </div>
+        </div>
+      )}
+
+      {openFilter === FilterType.EXTERNAL && (
+        <div className="HidableFilters">
+          <div className="HidableFiltersRow">
+            <h6>Show only external recipes:</h6>
+            <Checkbox
+              checked={onlyShowExternal}
+              color="success"
+              onChange={(e) => setSelectShowExternal(e.target.checked)}
+            />
+          </div>
+        </div>
+      )}
+
+      {openFilter === FilterType.INGREDIENTS && (
+        <div className="HidableFilters">
+          <div>
+            <SearchItem
+              label="Ingredient"
+              list={advancedIngredientsList}
+              selectOption={selectAdvancedIngredient}
+              unSelectOption={unSelectAdvancedIngredient}
+              selectedItems={selectedAdvancedIngredients}
+              clearSelection={clearSelectedAdvancedIngredients}
             />
           </div>
         </div>

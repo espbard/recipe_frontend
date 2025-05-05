@@ -1,0 +1,70 @@
+// @import "../../../styles/constants.scss";
+
+// .FilterIconContainer {
+//     display: grid;
+//     grid-auto-columns: auto 80% auto;
+//     align-items: center;
+//     margin-bottom: 10px;
+//     justify-content: center;
+//     // Button -> Don't select text
+//     -webkit-user-select: none;
+//     /* Safari */
+//     -ms-user-select: none;
+//     /* IE 10 and IE 11 */
+//     user-select: none;
+//     /* Standard syntax */
+
+//     .FilterIcon {
+//         grid-row: 1;
+//         grid-column: 2;
+//         display: flex;
+//         justify-content: center;
+//         z-index: 2;
+//         height: 40px;
+//         align-items: center;
+//     }
+
+//     img {
+//         cursor: pointer;
+//         width: 40px;
+//         height: 40px;
+//         filter: brightness(0) saturate(100%) invert(20%) sepia(30%) saturate(3790%) hue-rotate(159deg) brightness(89%) contrast(94%);
+//     }
+
+//     img:active {
+//         filter: invert(0.5);
+//     }
+
+//     .FilterDotContainer {
+//         grid-row: 1;
+//         grid-column: 2;
+//         display: flex;
+//         justify-content: center;
+//         overflow: hidden;
+//     }
+
+//     .FilterDot {
+//         color: var(--color-imperial-red);
+//         font-size: var(--font-size-xxxxlarge);
+//         font-weight: 900;
+//         margin: 0;
+//         rotate: 180deg;
+//         padding-right: 50px;
+//         padding-top: 8px;
+//     }
+
+// }
+
+// // .HidableIngredientFilters {
+// //     background: var(--color-white);
+// //     left: 0;
+// //     z-index: 3;
+// //     padding: 20px;
+// //     padding-top: 5px;
+// //     padding-bottom: 25px;
+// //     width: 94%;
+// //     margin-left: auto;
+// //     margin-right: auto;
+// //     border: 3px solid var(--color-midnight-green);
+// //     border-radius: 5px;
+// // }

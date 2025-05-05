@@ -41,8 +41,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const logout = () => {
-    console.log("logout");
-
     Cookies.remove("display-name");
     Cookies.remove("id");
     Cookies.remove("token");

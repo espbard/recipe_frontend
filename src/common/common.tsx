@@ -11,9 +11,31 @@ interface Ingredient {
   unit: string;
 }
 
+interface Instruction {
+  id: number;
+  name: string;
+}
+
 interface ListItem {
   name: string;
   id: number;
+}
+
+interface RecipeIface {
+  id: number;
+  title: string;
+  description: string | null;
+  ingredients: number[] | null;
+  instructions: string[] | null;
+  tags: string[] | null;
+  image: string | null;
+  portions: number | null;
+  created_at: string | null;
+  updated_at: string | null;
+  meal_type: string | null;
+  user_id: number | null;
+  link: string | null;
+  is_external: boolean | null;
 }
 
 enum Icon {
@@ -23,8 +45,8 @@ enum Icon {
   Remove = "➖",
   Close = "✖︎",
   Check = "✔︎",
-  ChevronLeft = "🞀",
-  ChevronRight = "🞂",
+  ChevronLeft = "◀",
+  ChevronRight = "▶",
   ChevronUp = "▲",
   ChevronDown = "▼",
   Home = "🏠",
@@ -37,6 +59,8 @@ enum Icon {
   Recipe = "🍽",
   BurgerMenu = "☰",
   Dot = "•",
+  Calendar = "📆",
+  Back = "←",
 }
 
 interface Color {
@@ -58,6 +82,7 @@ const Colors: Color[] = [
   { name: "cerulean", css: "var(--color-cerulean)" },
   { name: "red", css: "var(--color-imperial-red)" },
   { name: "rose", css: "var(--color-old-rose)" },
+  { name: "blue", css: "var(--color-microsoft-blue)" },
 ];
 
 const Capitalize = (s: string | undefined) => {
@@ -80,19 +105,33 @@ enum ErrorCodes {
   TOKEN_ERROR = 448,
   INVALID_IMAGE_NAME = 449,
   INVALID_IMAGE_TYPE = 450,
-  PLACEHOLDER_3 = 451,
+  QUERY_ERROR = 451,
   PLACEHOLDER_4 = 452,
   PLACEHOLDER_5 = 453,
   DEFAULT = 400,
 }
 
 enum PopUpFunctions {
+  GO_BACK = "GO_BACK",
   GO_TO_RECIPE = "GO_TO_RECIPE",
+  GO_TO_RECIPES = "GO_TO_RECIPES",
+  GO_TO_NEW_RECIPE = "GO_TO_NEW_RECIPE",
+  GO_TO_NEW_EXTERNAL_RECIPE = "GO_TO_NEW_EXTERNAL_RECIPE",
   DELETE_FUNCTION = "DELETE_FUNCTION",
+  DELETE_EXTERNAL_FUNCTION = "DELETE_EXTERNAL_FUNCTION",
+  CLEAR_SHOPPING_LIST = "CLEAR_SHOPPING_LIST",
   HOME = "HOME",
   RELOAD = "RELOAD",
   CLOSE = "CLOSE",
+  CLOSE_AND_REFRESH_RECIPES = "CLOSE_AND_REFRESH_RECIPES",
 }
 
-export type { AutocompleteOption, Ingredient, ListItem, User };
+export type {
+  AutocompleteOption,
+  Ingredient,
+  Instruction,
+  ListItem,
+  User,
+  RecipeIface,
+};
 export { Icon, Colors, Capitalize, ErrorCodes, PopUpFunctions };

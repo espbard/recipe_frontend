@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ListItem } from "../common/common";
+import { ListItem, RecipeIface } from "../common/common";
 
 interface GlobalState {
   error: {
@@ -7,12 +7,15 @@ interface GlobalState {
     message: string;
   };
   selectedIngredients: ListItem[];
+  selectedAdvancedIngredients: ListItem[];
   selectedTags: ListItem[];
   selectedMealType: string;
+  onlyShowExternal: boolean;
   search_str: string;
   server_connection: boolean;
   loading: boolean;
   loadingGlobal: boolean;
+  recipeList: RecipeIface[];
   popup: {
     open: boolean;
     isError: boolean;
@@ -24,6 +27,7 @@ interface GlobalState {
     leftButtonText?: string;
     rightButtonText?: string;
     id?: number;
+    external_recipe?: boolean;
   };
 }
 
@@ -33,12 +37,15 @@ const initialState: GlobalState = {
     message: "Placeholder",
   },
   selectedIngredients: [],
+  selectedAdvancedIngredients: [],
+  onlyShowExternal: false,
   selectedTags: [],
   selectedMealType: "",
   search_str: "",
   server_connection: false,
   loading: false,
   loadingGlobal: false,
+  recipeList: [],
   popup: {
     open: false,
     isError: false,
@@ -68,6 +75,7 @@ export const globalSlice = createSlice({
         leftButtonText?: string;
         rightButtonText?: string;
         id?: number;
+        external_recipe?: boolean;
       }>
     ) => {
       state.popup.open = action.payload.open;
@@ -80,6 +88,7 @@ export const globalSlice = createSlice({
       state.popup.leftButtonText = action.payload.leftButtonText || undefined;
       state.popup.rightButtonText = action.payload.rightButtonText || undefined;
       state.popup.id = action.payload.id || undefined;
+      state.popup.external_recipe = action.payload.external_recipe || undefined;
     },
     clearPopup: (state: any) => {
       state.popup.open = false;
@@ -91,6 +100,7 @@ export const globalSlice = createSlice({
       state.popup.leftButtonText = undefined;
       state.popup.rightButtonText = undefined;
       state.popup.id = undefined;
+      state.popup.external_recipe = undefined;
     },
     setError: (
       state: any,
@@ -103,11 +113,20 @@ export const globalSlice = createSlice({
     setSelectedIngredients: (state: any, action: PayloadAction<ListItem[]>) => {
       state.selectedIngredients = action.payload;
     },
+    setSelectedAdvancedIngredients: (
+      state: any,
+      action: PayloadAction<ListItem[]>
+    ) => {
+      state.selectedAdvancedIngredients = action.payload;
+    },
     setSelectedTags: (state: any, action: PayloadAction<ListItem[]>) => {
       state.selectedTags = action.payload;
     },
     setSelectedMealType: (state: any, action: PayloadAction<string>) => {
       state.selectedMealType = action.payload;
+    },
+    setOnlyShowExternal: (state: any, action: PayloadAction<boolean>) => {
+      state.onlyShowExternal = action.payload;
     },
     setSearchStr: (state: any, action: PayloadAction<string>) => {
       state.search_str = action.payload;
@@ -121,6 +140,9 @@ export const globalSlice = createSlice({
     setGlobalLoading: (state: any, action: PayloadAction<boolean>) => {
       state.loadingGlobal = action.payload;
     },
+    setRecipeList: (state: any, action: PayloadAction<RecipeIface[]>) => {
+      state.recipeList = action.payload;
+    },
   },
 });
 
@@ -129,12 +151,15 @@ export const {
   clearPopup,
   setError,
   setSelectedIngredients,
+  setSelectedAdvancedIngredients,
   setSelectedTags,
   setSelectedMealType,
+  setOnlyShowExternal,
   setSearchStr,
   setServerConnection,
   setLoading,
   setGlobalLoading,
+  setRecipeList,
 } = globalSlice.actions;
 
 export default globalSlice.reducer;

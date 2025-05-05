@@ -164,10 +164,45 @@
             }
         }
     }
+
+
+    .EditRecipeRow.ExternalLink {
+        border: none;
+        margin-bottom: 15px;
+        padding: 0;
+        font-size: var(--font-size-medium);
+
+        >p {
+            // Button -> Don't select text
+            -webkit-user-select: none;
+            /* Safari */
+            -ms-user-select: none;
+            /* IE 10 and IE 11 */
+            user-select: none;
+            /* Standard syntax */
+            padding: 5px;
+            margin: 0;
+            cursor: pointer;
+            color: var(--color-microsoft-blue);
+            margin-right: auto;
+            border-radius: 4px;
+            text-decoration: underline;
+        }
+
+        >p:hover {
+            background: var(--color-microsoft-blue);
+            color: var(--color-almost-white);
+        }
+
+        >p:active {
+            filter: brightness(1.2);
+        }
+    }
 }
 
 .SaveButtonContainer {
     grid-row: 3;
+    margin-top: auto;
 }
 
 .RecipeIngredientRow {

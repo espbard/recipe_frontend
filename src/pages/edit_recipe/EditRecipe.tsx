@@ -5,7 +5,7 @@ import { IngredientInput } from "../../components/molecules/IngredientInput/Ingr
 import { InstructionInput } from "../../components/molecules/InstructionInput/InstructionInput";
 import ServerIface from "../../ServerIface";
 import "./EditRecipe.scss";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Tag } from "../../components/molecules/Tag/Tag";
 import classNames from "classnames";
 import {
@@ -16,7 +16,11 @@ import {
 import { Icon } from "../../common/common";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
-import { setGlobalLoading, setPopup } from "../../redux/globalSlice";
+import {
+  setGlobalLoading,
+  setPopup,
+  setRecipeList,
+} from "../../redux/globalSlice";
 import Resizer from "react-image-file-resizer";
 
 interface RecipeIface {
@@ -85,7 +89,7 @@ const EditRecipe: React.FC = () => {
   const { id } = useParams();
 
   const format_image_name = (name: string) => {
-    if (name === undefined) {
+    if (name === undefined || name === null || name === "") {
       return "";
     }
     let file_name_split = name.split(".");
@@ -110,6 +114,7 @@ const EditRecipe: React.FC = () => {
 
   useEffect(() => {
     const fetchRecipe = async () => {
+      dispatch(setGlobalLoading(true));
       const iface = new ServerIface();
       const search_id = id ? id.toLocaleString() : "-1";
       const recipe_data = await iface.get_search("recipe", search_id);
@@ -122,7 +127,8 @@ const EditRecipe: React.FC = () => {
       let recipe: RecipeIface = {
         id: respose.id,
         title: respose.title,
-        description: respose.description.replace(/\\n/g, "\n"),
+        description:
+          respose.description && respose.description.replace(/\\n/g, "\n"),
         created_at: respose.created_at,
         updated_at: respose.updated_at,
         instructions: [],
@@ -220,9 +226,7 @@ const EditRecipe: React.FC = () => {
       set_selectedTags(recipe_tags);
     };
     if (id !== undefined) {
-      dispatch(setGlobalLoading(true));
       fetchRecipe();
-      dispatch(setGlobalLoading(false));
     }
     let recipe_cpy = { ...recipe, image: format_image_name(recipe.image) };
     set_recipe(recipe_cpy);
@@ -463,6 +467,8 @@ const EditRecipe: React.FC = () => {
   };
 
   const openPopUp = (newId?: number) => {
+    let recipe_id = id ? parseInt(id) : newId ? newId : -1;
+
     const message = result
       ? `Successfully ${id ? "updated" : "created"} recipe!`
       : `Failed to ${id ? "update" : "create"} recipe!`;
@@ -473,13 +479,15 @@ const EditRecipe: React.FC = () => {
         message: message,
         singleButton: result,
         title: !result ? "Error" : id ? "Recipe updated" : "Recipe created",
-        leftButtonText: result ? "Ok" : "Reload",
+        leftButtonText: result ? "Go to recipe" : "Reload",
         rightButtonText: result ? "" : "Cancel",
         onClickLeft: result
-          ? PopUpFunctions.GO_TO_RECIPE
+          ? PopUpFunctions.GO_TO_NEW_RECIPE
           : PopUpFunctions.RELOAD,
-        onClickRight: result ? PopUpFunctions.CLOSE : PopUpFunctions.HOME,
-        id: id ? parseInt(id) : newId ? newId : -1,
+        onClickRight: result
+          ? PopUpFunctions.CLOSE_AND_REFRESH_RECIPES
+          : PopUpFunctions.HOME,
+        id: recipe_id,
       })
     );
   };
@@ -631,14 +639,26 @@ const EditRecipe: React.FC = () => {
     });
   };
 
+  const navigate = useNavigate();
+
+  const onExternalLinkClick = () => {
+    navigate("/NewExternalRecipe");
+  };
+
   return (
     <PageTemplate
+      hasBackButton
       content={
-        <div id="EditRecipePage">
+        <div id="EditRecipePage" key={"EditRecipe"}>
           <div id="EditRecipeHeader">
             <h1>{id ? "Edit Recipe" : "New Recipe"}</h1>
           </div>
           <div id="EditRecipeForm">
+            {id === undefined && (
+              <div className="EditRecipeRow ExternalLink">
+                <p onClick={onExternalLinkClick}>Add external recipe</p>
+              </div>
+            )}
             <div className="EditRecipeRow">
               <div className="EditRecipeLabel">
                 <p className="EditRecipeLabelText">
@@ -674,7 +694,9 @@ const EditRecipe: React.FC = () => {
                     <h6>{recipe.image}</h6>
                   </div>
                   <label htmlFor="files" className="UploadImageButton">
-                    {recipe.image.length > 0 ? "Change image" : "Upload image"}
+                    {recipe.image && recipe.image.length > 0
+                      ? "Change image"
+                      : "Upload image"}
                   </label>
                   <input
                     id="files"
@@ -710,6 +732,7 @@ const EditRecipe: React.FC = () => {
                   <option value="Dessert">Dessert</option>
                   <option value="Baked">Baked</option>
                   <option value="Snack">Snack</option>
+                  <option value="Side">Side</option>
                 </select>
               </div>
             </div>

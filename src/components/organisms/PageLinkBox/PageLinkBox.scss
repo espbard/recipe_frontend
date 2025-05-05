@@ -1,0 +1,63 @@
+.PageLinkBox {
+    color: var(--color-almost-white);
+    font-weight: 600;
+    font-size: var(--font-size-xlarge);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    // Button -> Don't select text
+    -webkit-user-select: none;
+    /* Safari */
+    -ms-user-select: none;
+    /* IE 10 and IE 11 */
+    user-select: none;
+    /* Standard syntax */
+    text-shadow: 1px 1px 8px rgba(0, 0, 0, 0.7);
+
+    img {
+        width: 50px;
+        height: 50px;
+
+    }
+}
+
+.PageLinkBoxDisabled {
+    cursor: not-allowed;
+}
+
+.PageLinkBox.PageLinkBoxDisabled:hover {
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+
+.PageLinkBox:hover {
+    box-shadow: inset 0 0 15px 8px rgba(0, 0, 0, 0.3);
+}
+
+.PageLinkBox.PageLinkBox-unused:hover {
+    box-shadow: none;
+}
+
+
+.PageLinkBox-green {
+    background: var(--color-midnight-green);
+}
+
+.PageLinkBox-red {
+    background: var(--color-old-rose);
+}
+
+.PageLinkBox-yellow {
+    background: var(--color-main-darker);
+}
+
+.PageLinkBox.PageLinkBox-unused {
+    cursor: not-allowed;
+    background: var(--color-charcoal);
+}

@@ -5,7 +5,7 @@ import "./CustomButton.scss";
 import classNames from "classnames";
 
 interface CustomButtonProps {
-  label: string;
+  label?: string;
   hoverLabel?: string;
   color?: string;
   background?: string;
@@ -15,6 +15,8 @@ interface CustomButtonProps {
   fontWeight?: number;
   filter?: boolean;
   onClick: () => void;
+  unBordered?: boolean;
+  image?: string;
 }
 
 export class CustomButton extends Component<CustomButtonProps> {
@@ -46,6 +48,7 @@ export class CustomButton extends Component<CustomButtonProps> {
     const classes = classNames("CustomButton", {
       InvertedButton: this.props.inverted,
       RoundButton: this.props.round,
+      UnBorderedButton: this.props.unBordered,
     });
 
     const getFontSize = () => {
@@ -67,6 +70,11 @@ export class CustomButton extends Component<CustomButtonProps> {
       CustomButtonTextFiltered: this.props.filter,
     });
 
+    const imageClasses = classNames("CustomButtonText", {
+      CustomButtonTextFiltered: this.props.filter,
+      CustomButtonTextImage: true,
+    });
+
     return (
       <div
         onClick={this.props.onClick}
@@ -75,10 +83,21 @@ export class CustomButton extends Component<CustomButtonProps> {
       >
         {this.props.hoverLabel ? (
           <CustomButtonLabel
-            label={this.props.label}
+            label={this.props.label || ""}
             hoverLabel={this.props.hoverLabel}
             fontSize={getFontSize()}
             color={color}
+          />
+        ) : this.props.image ? (
+          <img
+            src={this.props.image}
+            alt="Icon"
+            className={imageClasses}
+            style={{
+              fontSize: getFontSize(),
+              color,
+              fontWeight: this.props.fontWeight ? this.props.fontWeight : 500,
+            }}
           />
         ) : (
           <p

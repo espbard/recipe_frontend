@@ -17,6 +17,9 @@
     .NavBarTitle {
         color: var(--color-midnight-green);
         font-weight: 700 !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 }
 

@@ -4,7 +4,7 @@ import { useAppSelector } from "../../../redux/hooks";
 import "./PopUp.scss";
 import ServerIface from "../../../ServerIface";
 import { PopUpFunctions } from "../../../common/common";
-import { setPopup } from "../../../redux/globalSlice";
+import { setPopup, setRecipeList } from "../../../redux/globalSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -35,31 +35,103 @@ const PopUp: React.FC<PopUpProps> = ({
   const navigate = useNavigate();
 
   const deleteRecipe = async () => {
-    let data = await iface
-      .delete("recipes/" + curr_popup.id)
-      .then((res) => res);
+    if (curr_popup.external_recipe) {
+      let data = await iface
+        .delete("external_recipes/" + curr_popup.id)
+        .then((res) => res);
 
-    if (data === undefined) {
-      dispatch(
-        setPopup({
-          open: true,
-          isError: true,
-          message: "Failed to delete recipe",
-        })
-      );
+      if (data === undefined) {
+        dispatch(
+          setPopup({
+            open: true,
+            isError: true,
+            message: "Failed to delete recipe",
+            leftButtonText: "Reload page",
+            onClickLeft: PopUpFunctions.RELOAD,
+          })
+        );
+      } else {
+        dispatch(
+          setPopup({
+            open: true,
+            isError: false,
+            message: "Successfully deleted recipe",
+            leftButtonText: "Go to recipes",
+            onClickLeft: PopUpFunctions.GO_TO_RECIPES,
+            singleButton: true,
+          })
+        );
+      }
     } else {
-      dispatch(
-        setPopup({
-          open: false,
-          isError: false,
-          message: "",
-        })
-      );
-      navigate("/");
+      let data = await iface
+        .delete("recipes/" + curr_popup.id)
+        .then((res) => res);
+
+      if (data === undefined) {
+        dispatch(
+          setPopup({
+            open: true,
+            isError: true,
+            message: "Failed to delete recipe",
+            leftButtonText: "Reload page",
+            onClickLeft: PopUpFunctions.RELOAD,
+          })
+        );
+      } else {
+        dispatch(
+          setPopup({
+            open: true,
+            isError: false,
+            message: "Successfully deleted recipe",
+            leftButtonText: "Go to recipes",
+            onClickLeft: PopUpFunctions.GO_TO_RECIPES,
+            singleButton: true,
+          })
+        );
+      }
     }
   };
 
-  const retry = () => {
+  const clearShoppingList = async () => {
+    let item_ids: number[] = [];
+    await iface.get("shopping_list").then((res) => {
+      if (res === undefined || res.length === 0) {
+        return;
+      } else {
+        for (let i = 0; i < res.length; i++) {
+          if (res[i].id !== undefined) {
+            item_ids.push(res[i].id);
+          }
+        }
+      }
+    });
+
+    item_ids.forEach((id) => {
+      iface.delete("shopping_list/" + id).then((res) => {
+        if (res === undefined || res !== 200) {
+          dispatch(
+            setPopup({
+              open: true,
+              isError: true,
+              message: "Failed to clear shopping list",
+              onClickLeft: PopUpFunctions.RELOAD,
+            })
+          );
+          return;
+        }
+      });
+    });
+    dispatch(
+      setPopup({
+        open: true,
+        isError: false,
+        message: "Shopping list cleared",
+        onClickLeft: PopUpFunctions.RELOAD,
+      })
+    );
+  };
+
+  const reload = () => {
     dispatch(
       setPopup({
         open: false,
@@ -84,19 +156,65 @@ const PopUp: React.FC<PopUpProps> = ({
     switch (function_name) {
       case PopUpFunctions.DELETE_FUNCTION:
         deleteRecipe();
+        dispatch(setRecipeList([]));
+        close();
+        break;
+      case PopUpFunctions.GO_TO_RECIPES:
+        navigate("/recipes", { replace: true });
+        close();
+        break;
+      case PopUpFunctions.GO_BACK:
+        if (navigate(-1) === undefined) {
+          navigate("/");
+          close();
+          break;
+        }
         close();
         break;
       case PopUpFunctions.GO_TO_RECIPE:
+        if (curr_popup.id === undefined) {
+          close();
+          break;
+        }
+        if (curr_popup.external_recipe) {
+          navigate("/recipe/e" + curr_popup.id);
+        } else {
+          navigate("/recipe/" + curr_popup.id);
+        }
         close();
-        if (curr_popup.id === undefined) break;
-        navigate("/recipe/" + curr_popup.id);
+        break;
+      case PopUpFunctions.GO_TO_NEW_RECIPE:
+        if (curr_popup.id === undefined) {
+          close();
+          break;
+        }
+        navigate("/recipe/" + curr_popup.id, { replace: true });
+        dispatch(setRecipeList([]));
+        close();
+        break;
+      case PopUpFunctions.GO_TO_NEW_EXTERNAL_RECIPE:
+        navigate(-1);
+        if (curr_popup.id === undefined) {
+          close();
+          break;
+        }
+        navigate("/recipe/e" + curr_popup.id);
+        dispatch(setRecipeList([]));
+        close();
+        break;
+      case PopUpFunctions.CLEAR_SHOPPING_LIST:
+        clearShoppingList();
         break;
       case PopUpFunctions.HOME:
         close();
         navigate("/");
         break;
       case PopUpFunctions.RELOAD:
-        retry();
+        reload();
+        break;
+      case PopUpFunctions.CLOSE_AND_REFRESH_RECIPES:
+        dispatch(setRecipeList([]));
+        close();
         break;
       case PopUpFunctions.CLOSE:
       default:

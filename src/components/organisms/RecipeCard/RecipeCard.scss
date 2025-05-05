@@ -60,6 +60,24 @@
     }
 }
 
+.RecipeCardContainer.External::after {
+    text-shadow: black 1px 1px 3px;
+    content: "External";
+    position: absolute;
+    top: -15px;
+    left: -68px;
+    width: 100px;
+    text-align: center;
+    transform: rotate(-45deg);
+    background: var(--color-microsoft-blue);
+    color: var(--color-almost-white);
+    padding: 34px;
+    padding-bottom: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 8px;
+}
+
 .RecipeCardContainer:hover {
     box-shadow: 0px 0px 10px 1px var(--color-almost-black);
     filter: contrast(0.9);
@@ -114,9 +132,59 @@
     display: none;
 }
 
+.RecipeCardMatchesRow {
+    display: flex;
+    justify-content: space-between;
+    padding-left: 4%;
+    padding-right: 4%;
+    filter: opacity(0.7);
+
+    .RecipeCardMatchItem {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+
+        img {
+            width: 30px;
+            height: 30px;
+        }
+
+        p {
+            font-size: var(--font-size-large);
+        }
+    }
+
+    .RecipeCardMatchItem.RecipeCardMatches {
+        filter: invert(62%) sepia(51%) saturate(529%) hue-rotate(64deg) brightness(88%) contrast(93%);
+    }
+
+    .RecipeCardMatchItem.RecipeCardMisses {
+        filter: invert(63%) sepia(75%) saturate(5746%) hue-rotate(331deg) brightness(92%) contrast(94%);
+        color: black
+    }
+
+    .RecipeCardMatchItem.RecipeCardUnknown {
+        filter: invert(0%) sepia(0%) saturate(7470%) hue-rotate(272deg) brightness(108%) contrast(108%);
+        color: black
+    }
+
+    .RecipeCardMatchesTitle {
+        font-size: var(--font-size-medium);
+        color: black;
+    }
+}
+
 .RecipeCardContainer.Breakfast:before {
     content: "Breakfast";
     background: #FFD45E;
+    display: block;
+}
+
+.RecipeCardContainer.Side:before {
+    content: "Side";
+    background: #56b545;
     display: block;
 }
 

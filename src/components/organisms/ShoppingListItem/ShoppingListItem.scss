@@ -1,0 +1,45 @@
+.ShoppingListItem {
+    display: flex;
+    justify-content: space-between;
+
+    .ShoppingListItemText {
+        border-bottom: 2px solid var(--color-almost-black);
+        flex-grow: 1;
+    }
+
+    .ShoppingListItemRemove {
+        // Button -> Don't select text
+        -webkit-user-select: none;
+        /* Safari */
+        -ms-user-select: none;
+        /* IE 10 and IE 11 */
+        user-select: none;
+        /* Standard syntax */
+        display: flex;
+        color: var(--color-imperial-red);
+        cursor: pointer;
+        font-weight: 800;
+        margin-left: 10px;
+    }
+
+    .ShoppingListItemRemove:hover {
+        filter: brightness(0.9);
+    }
+
+    .ShoppingListItemRemove:active {
+        filter: brightness(0.8);
+    }
+
+    p {
+        color: var(--color-charcoal);
+        margin-top: 2px;
+        margin-bottom: 2px;
+    }
+}
+
+.ShoppingListItemInput {
+    border-radius: 8px;
+    border: 2px solid var(--color-charcoal);
+    background: var(--color-main-darker);
+    color: var(--color-charcoal);
+}

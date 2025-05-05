@@ -60,6 +60,16 @@
     filter: brightness(0) saturate(100%) invert(42%) sepia(100%) saturate(2100%) hue-rotate(330deg) brightness(92%) contrast(97%);
 }
 
+.CustomButton.UnBorderedButton {
+    border: 0px;
+}
+
+.CustomButtonTextImage {
+    width: 35px;
+    height: 35px;
+    margin-top: auto;
+    margin-bottom: auto;
+}
 
 @media screen and (max-width: 1000px) {
     .CustomButton.InvertedButton {

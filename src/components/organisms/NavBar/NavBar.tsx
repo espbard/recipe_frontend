@@ -32,6 +32,17 @@ const NavBar: React.FC = () => {
           });
         }
       }
+
+      iface.get("external_recipes").then((ext_res) => {
+        if (ext_res !== undefined) {
+          for (let i = 0; i < ext_res.length; i++) {
+            recipes.push({
+              id: 500000 + ext_res[i].id,
+              name: ext_res[i].title,
+            });
+          }
+        }
+      });
     });
     setRecipeList(recipes);
   }, []);
@@ -45,7 +56,7 @@ const NavBar: React.FC = () => {
         <h4 className="NavBarTitle">Our Recipes ❤️</h4>
       </div>
       <div id="NavBarEnd">
-        {currentPage !== "/login" && (
+        {currentPage !== "/login" && tokenCookie && (
           <div id="NavBarSearch">
             <input
               type="text"

@@ -6,11 +6,18 @@ import "./PageTemplate.scss";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { setServerConnection } from "../../../redux/globalSlice";
 import PopUp from "../../molecules/PopUp/PopUp";
+import { CustomButton } from "../../atoms/CustomButton/CustomButton";
+import { Icon } from "../../../common/common";
+import { useNavigate } from "react-router-dom";
 interface PageTemplateProps {
-  content: JSX.Element;
+  content: JSX.Element | undefined;
+  hasBackButton?: boolean;
 }
 
-const PageTemplate: React.FC<PageTemplateProps> = ({ content }) => {
+const PageTemplate: React.FC<PageTemplateProps> = ({
+  content,
+  hasBackButton,
+}) => {
   const [popupOpen, setPopupOpen] = React.useState(false);
   const popup = useAppSelector((state) => state.global.popup);
   const [serverConnected, setServerConnected] = React.useState(true);
@@ -50,46 +57,76 @@ const PageTemplate: React.FC<PageTemplateProps> = ({ content }) => {
     } else {
       connectToServer();
     }
-  }, [dispatch]);
+  }, []);
 
-  return (
-    <div id="PageTemplate">
-      {(globalLoading || loading) && (
-        <div id="LoadingPopUp">
-          <div className="LoadIcon"></div>
-        </div>
-      )}
-      {!serverConnected && !loading && !globalLoading ? (
-        <ErrorPage message={"Failed to connect to the server"} />
-      ) : (
-        <div id="PageContent">
-          <NavBar />
-          {popupOpen && (
-            <PopUp
-              title={
-                popup.title ? popup.title : popup.isError ? "Error" : "Success"
-              }
-              isError={popup.isError}
-              text={popup.message}
-              leftButtonText={
-                popup.leftButtonText
-                  ? popup.leftButtonText
-                  : popup.isError
-                  ? "Reload"
-                  : "Ok"
-              }
-              rightButtonText={
-                popup.rightButtonText ? popup.rightButtonText : "Close"
-              }
-              singleButton={popup.singleButton}
-            />
-          )}
+  const navigate = useNavigate();
 
-          <div id="MainContent">{content}</div>
-        </div>
-      )}
-    </div>
-  );
+  const getContent = () => {
+    return (
+      <div id="PageTemplate">
+        {(globalLoading || loading) && (
+          <div id="LoadingPopUp">
+            <div className="LoadIcon"></div>
+          </div>
+        )}
+        {!serverConnected && !loading && !globalLoading ? (
+          <ErrorPage
+            key="error-page"
+            message={"Failed to connect to the server"}
+          />
+        ) : (
+          <div id="PageContent">
+            <NavBar />
+            {hasBackButton && (
+              <div className="BackButtonContainer">
+                <CustomButton
+                  label={Icon.Back}
+                  onClick={() => navigate(-1)}
+                  background="black"
+                  size="medium"
+                  inverted
+                  round
+                  unBordered
+                />
+              </div>
+            )}
+            {popupOpen && (
+              <PopUp
+                key={popup.message}
+                title={
+                  popup.title
+                    ? popup.title
+                    : popup.isError
+                    ? "Error"
+                    : "Success"
+                }
+                isError={popup.isError}
+                text={popup.message}
+                leftButtonText={
+                  popup.leftButtonText
+                    ? popup.leftButtonText
+                    : popup.isError
+                    ? "Reload"
+                    : "Ok"
+                }
+                rightButtonText={
+                  popup.rightButtonText ? popup.rightButtonText : "Close"
+                }
+                singleButton={popup.singleButton}
+              />
+            )}
+            <div id="MainContent">{content}</div>
+          </div>
+        )}
+      </div>
+    );
+  };
+  try {
+    return getContent();
+  } catch (error) {
+    console.error(error);
+    return <></>;
+  }
 };
 
 export default PageTemplate;

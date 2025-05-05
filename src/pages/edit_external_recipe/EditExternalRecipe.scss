@@ -1,0 +1,185 @@
+#EditExternalRecipe {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-white);
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 20px;
+    margin-top: 0;
+
+    #EditExternalRecipeTitle {
+        text-align: center;
+        color: var(--color-midnight-green);
+    }
+
+    #EditExternalRecipeForm {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+
+        .EditExternalRecipeRow {
+            display: grid;
+            grid-auto-columns: 25% 75%;
+            grid-auto-rows: 100%;
+            flex: 5;
+            margin-bottom: 10px;
+            max-height: 60px;
+
+            .EditExternalRecipeRowTitle {
+                font-size: var(--font-size-large);
+                grid-row: 1;
+                grid-column: 1;
+                margin: 0;
+                display: flex;
+                align-items: center;
+            }
+
+            .EditExternalRecipeRowInput {
+                grid-row: 1;
+                grid-column: 2;
+                display: flex;
+                border-radius: 5px;
+                color: var(--color-almost-black);
+                padding-left: 5px;
+                font-size: var(--font-size-medium);
+            }
+
+            .EditExternalRecipeUploadImageInput {
+                grid-row: 1;
+                grid-column: 2;
+
+            }
+
+            .EditExternalRecipeRowInput.InputHasError {
+                border: 2px solid var(--color-imperial-red);
+
+                color: var(--color-imperial-red);
+                animation: shake 0.2s;
+                animation-iteration-count: 5;
+
+            }
+        }
+    }
+
+    .EditExternalRecipeImageRow {
+        display: flex;
+        justify-self: center;
+        justify-content: center;
+        overflow: hidden;
+        grid-auto-rows: 100%;
+        grid-auto-columns: 75% 25%;
+        grid-row: 1;
+        grid-column: 2;
+        width: 100%;
+        background: black;
+    }
+
+    .EditExternalRecipeImageText {
+        overflow: hidden;
+        margin-right: 20px;
+        margin-top: auto;
+        margin-bottom: auto;
+        grid-row: 1;
+        grid-column: 1;
+
+        h6 {
+            margin: 0;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: var(--font-size-xsmall);
+            font-weight: 500;
+        }
+    }
+
+    .EditExternalRecipeImageContent {
+        grid-row: 1;
+        grid-column: 2;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        overflow: hidden;
+    }
+
+    .EditExternalRecipeUploadImageButton {
+        width: 90px;
+        background: var(--color-midnight-green);
+        color: var(--color-almost-white);
+        font-size: var(--font-size-medium);
+        font-weight: 600;
+        text-align: center;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        border-radius: 5px;
+
+        // Button -> Don't select text
+        -webkit-user-select: none;
+        /* Safari */
+        -ms-user-select: none;
+        /* IE 10 and IE 11 */
+        user-select: none;
+        /* Standard syntax */
+    }
+
+    .EditExternalRecipeUploadImageButton:hover {
+        background: var(--color-cerulean);
+        color: var(--color-white);
+    }
+
+    .EditExternalRecipeUploadImageButton:active {
+        box-shadow: inset 0 0 5px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    #EditExternalRecipeSubmit {
+        background: var(--color-midnight-green);
+        color: var(--color-almost-white);
+        font-size: var(--font-size-xxlarge);
+        font-weight: 500;
+        text-align: center;
+        width: 100%;
+        padding-top: 5px;
+        padding-bottom: 4px;
+        cursor: pointer;
+    }
+
+    #EditExternalRecipeSubmit:hover {
+        filter: brightness(0.95);
+        box-shadow: inset 0 0 5px 2px rgba(0, 0, 0, 0.3);
+
+        // Button -> Don't select text
+        -webkit-user-select: none;
+        /* Safari */
+        -ms-user-select: none;
+        /* IE 10 and IE 11 */
+        user-select: none;
+        /* Standard syntax */
+    }
+
+    #EditExternalRecipeSubmit:active {
+        filter: brightness(1.1);
+    }
+}
+
+
+@keyframes shake {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(0.9deg);
+    }
+
+    50% {
+        transform: rotate(0eg);
+    }
+
+    75% {
+        transform: rotate(-0.9deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}

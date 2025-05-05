@@ -25,26 +25,53 @@ const SearchDropdownItem: React.FC<SearchDropdownItemProps> = ({ id }) => {
 
   useEffect(() => {
     const iface = new ServerIface();
-    iface.get_search("recipe", id.toString()).then((response) => {
-      if (response !== undefined) {
-        let temp_recipe = {
-          id: response[0].id,
-          title: response[0].title,
-          image: response[0].image,
-        };
-        setRecipe(temp_recipe);
-        if (response[0].image !== "") {
-          let cdn_url = iface.getCdn();
-          setImage(cdn_url + response[0].image);
+
+    if (id > 500000) {
+      const ext_id = id - 500000;
+
+      iface
+        .get_search("external_recipe", ext_id.toString())
+        .then((response) => {
+          if (response !== undefined) {
+            let temp_recipe = {
+              id: response[0].id,
+              title: response[0].title,
+              image: response[0].image,
+            };
+            setRecipe(temp_recipe);
+            if (response[0].image !== "") {
+              let cdn_url = iface.getCdn();
+              setImage(cdn_url + response[0].image);
+            }
+          }
+        });
+    } else {
+      iface.get_search("recipe", id.toString()).then((response) => {
+        if (response !== undefined) {
+          let temp_recipe = {
+            id: response[0].id,
+            title: response[0].title,
+            image: response[0].image,
+          };
+          setRecipe(temp_recipe);
+          if (response[0].image !== "") {
+            let cdn_url = iface.getCdn();
+            setImage(cdn_url + response[0].image);
+          }
         }
-      }
-    });
+      });
+    }
   }, [id]);
 
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate("/recipe/" + recipe.id);
+    if (id > 500000) {
+      navigate("/recipe/e" + (id - 500000));
+    } else {
+      navigate("/recipe/" + recipe.id);
+    }
+    window.location.reload();
   };
 
   const addImageFallback = (event: SyntheticEvent<HTMLImageElement, Event>) => {

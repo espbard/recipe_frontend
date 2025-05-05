@@ -1,13 +1,7 @@
 import store from "./redux/store";
 import { setError, setPopup } from "./redux/globalSlice";
 import { ErrorCodes, Ingredient } from "./common/common";
-import { S3Client } from "@aws-sdk/client-s3";
 
-const ACCESS_KEY_ID = "d0ee871c416143ddf346f1abdce1364f";
-const ACCESS_KEY_SECRET =
-  "842d78f2cece773ab4de5f4a596be6e1aebf22ecd8d2d013635cd90ef1d62a00";
-const R2_ENPOINT =
-  "https://baec190b8cc3c8c7d0a4e06fb6bdcbc6.r2.cloudflarestorage.com";
 const CDN_URL = "https://cdn-server.espen-bardevik.workers.dev/";
 
 interface PutRecipeIface {
@@ -17,6 +11,16 @@ interface PutRecipeIface {
   instructions: string[];
   ingredients: Ingredient[];
   tags: string[];
+  portions: number;
+  meal_type: string;
+}
+
+interface PutExternalRecipeIface {
+  title: string;
+  link: string;
+  link_type: string;
+  meal_type: string;
+  image: string;
 }
 
 interface PostRecipeIface {
@@ -211,6 +215,30 @@ class ServerIface {
   async put_recipe(data: PutRecipeIface, id: string) {
     try {
       const response = await fetch(`${this.baseUrl}recipes/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      let res = {
+        success: response.ok,
+        message: await response.json(),
+      };
+      if (!res.success) {
+        console.error("PUT request failed:", res.message);
+        this.setGlobalError("Failed to update recipe: " + res.message);
+      }
+      return { res };
+    } catch (error: any) {
+      console.error("PUT request failed:", error);
+      this.setGlobalError(error.message + ": Failed to update recipe");
+    }
+  }
+
+  async put_external_recipe(data: PutExternalRecipeIface, id: string) {
+    try {
+      const response = await fetch(`${this.baseUrl}external_recipes/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

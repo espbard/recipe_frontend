@@ -2,28 +2,26 @@ import { Component, SyntheticEvent } from "react";
 import ServerIface from "../../../ServerIface";
 import "./RecipeCard.scss";
 import missing_picture_placeholder from "../../../assets/images/missing_picture_placeholder.png";
+import CheckIcon from "../../../assets/images/check.svg";
+import CrossIcon from "../../../assets/images/cross.svg";
+import ListIcon from "../../../assets/images/list.svg";
 import { NavLink } from "react-router-dom";
 import { Capitalize } from "../../../common/common";
 import classNames from "classnames";
-
-interface RecipeIface {
-  id: number;
-  title: string;
-  description: string;
-  created_at: string;
-  user_id: number;
-  image: string;
-  meal_type: string;
-}
+import { RecipeIface } from "../../../common/common";
 
 interface RecipeCardProps {
   recipe_object: RecipeIface;
   disabled?: boolean;
+  advanced_ingredient_matches?: number;
+  advanced_ingredient_misses?: number;
+  ingredients_outside_matches?: number;
 }
 
 interface RecipeCardStates {
   author: string;
   image: string;
+  ingredients: string[];
 }
 
 function FormatDate(date: string) {
@@ -34,12 +32,14 @@ function FormatDate(date: string) {
   var formatted_date = day + "." + month + "." + year;
   return formatted_date;
 }
+
 export class RecipeCard extends Component<RecipeCardProps, RecipeCardStates> {
   constructor(props: RecipeCardProps) {
     super(props);
     this.state = {
       author: "N/A",
       image: "",
+      ingredients: [],
     };
   }
 
@@ -49,7 +49,7 @@ export class RecipeCard extends Component<RecipeCardProps, RecipeCardStates> {
       this.props.recipe_object !== undefined &&
       this.props.recipe_object.user_id !== undefined
     ) {
-      let user_id = this.props.recipe_object.user_id;
+      let user_id = this.props.recipe_object.user_id || -1;
       iface.get_search("user", user_id.toLocaleString()).then((response) => {
         if (
           response !== undefined &&
@@ -61,13 +61,15 @@ export class RecipeCard extends Component<RecipeCardProps, RecipeCardStates> {
       });
     }
 
-    if (this.props.recipe_object.image === "") {
-      return;
+    if (
+      this.props.recipe_object.image !== undefined &&
+      this.props.recipe_object.image !== null &&
+      this.props.recipe_object.image !== "" &&
+      this.props.recipe_object.image !== "undefined"
+    ) {
+      const cdn_url = iface.getCdn();
+      this.setState({ image: cdn_url + this.props.recipe_object.image });
     }
-
-    const cdn_url = iface.getCdn();
-
-    this.setState({ image: cdn_url + this.props.recipe_object.image });
   }
 
   render() {
@@ -76,7 +78,6 @@ export class RecipeCard extends Component<RecipeCardProps, RecipeCardStates> {
     ) => {
       event.currentTarget.src = missing_picture_placeholder;
     };
-
     const recipeCardClasses = classNames("RecipeCardContainer", {
       Breakfast: this.props.recipe_object.meal_type === "Breakfast",
       Lunch: this.props.recipe_object.meal_type === "Lunch",
@@ -85,13 +86,16 @@ export class RecipeCard extends Component<RecipeCardProps, RecipeCardStates> {
       Dessert: this.props.recipe_object.meal_type === "Dessert",
       Baked: this.props.recipe_object.meal_type === "Baked",
       Snack: this.props.recipe_object.meal_type === "Snack",
+      Side: this.props.recipe_object.meal_type === "Side",
+      External: this.props.recipe_object.is_external,
     });
 
+    const recipe_page_id = this.props.recipe_object.is_external
+      ? "e" + this.props.recipe_object.id
+      : this.props.recipe_object.id;
+
     return (
-      <NavLink
-        to={"/recipe/" + this.props.recipe_object.id}
-        className={recipeCardClasses}
-      >
+      <NavLink to={"/recipe/" + recipe_page_id} className={recipeCardClasses}>
         <div className="RecipeCardImageContainer">
           <img src={this.state.image} alt="Recipe" onError={addImageFallback} />
         </div>
@@ -101,12 +105,34 @@ export class RecipeCard extends Component<RecipeCardProps, RecipeCardStates> {
               {Capitalize(this.props.recipe_object.title)}
             </h3>
           </div>
-          <div className="RecipeCardAuthorInfo">
-            <p>
-              By: <b> {Capitalize(this.state.author.toString())}</b>
-            </p>
-            <p>{FormatDate(this.props.recipe_object.created_at)}</p>
-          </div>
+          {this.props.advanced_ingredient_matches !== undefined && (
+            <div className="RecipeCardMatchesRow">
+              <h3 className="RecipeCardMatchesTitle">Matches:</h3>
+              <h3 className="RecipeCardMatchItem RecipeCardMatches">
+                <p>{this.props.advanced_ingredient_matches}</p>
+                <img src={CheckIcon} />
+              </h3>
+              <h3 className="RecipeCardMatchItem RecipeCardMisses">
+                <p>{this.props.advanced_ingredient_misses}</p>
+                <img src={CrossIcon} />
+              </h3>
+              <h3 className="RecipeCardMatchItem RecipeCardUnknown">
+                <p>{this.props.ingredients_outside_matches}</p>
+                <img src={ListIcon} />
+              </h3>
+            </div>
+          )}
+          {!this.props.recipe_object.is_external && (
+            <div className="RecipeCardAuthorInfo">
+              <p>
+                By: <b> {Capitalize(this.state.author.toString())}</b>
+              </p>
+              {this.props.recipe_object.created_at !== undefined &&
+                this.props.recipe_object.created_at !== null && (
+                  <p>{FormatDate(this.props.recipe_object.created_at)}</p>
+                )}
+            </div>
+          )}
         </div>
       </NavLink>
     );

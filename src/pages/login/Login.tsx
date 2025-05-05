@@ -67,7 +67,7 @@ const Login: React.FC = () => {
   return (
     <PageTemplate
       content={
-        <div id="LoginPage">
+        <div id="LoginPage" key={"login-page"}>
           <div className="LoginPageRow" id="LoginInputContainer">
             <form>
               <div className="LoginInputRow">
