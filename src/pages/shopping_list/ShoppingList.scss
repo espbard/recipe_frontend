@@ -21,6 +21,17 @@ $home-button-clearance: $home-button-size + $home-button-offset * 2;
     flex-direction: column;
 
     #ShoppingListTitle {
+        // Stays put at the top of the viewport while the list scrolls behind it.
+        // The margins become padding so the strip is opaque all the way through,
+        // and the offset matches the negative top margin above, which lifts the
+        // page into #MainContent's top padding.
+        position: sticky;
+        top: -15px;
+        z-index: 2;
+        background: var(--color-main);
+        margin: 0;
+        padding-top: 26px;
+        padding-bottom: 26px;
         width: 100%;
         text-align: center;
         color: var(--color-charcoal);
@@ -34,7 +45,7 @@ $home-button-clearance: $home-button-size + $home-button-offset * 2;
         flex-direction: column;
     }
 
-    .ShoppingListItemInputContainer {
+    .ShoppingListFooter {
         // Stays put at the bottom of the viewport while a long list scrolls
         // behind it. The bottom padding is the space kept free for the home
         // button and doubles as padding underneath the input.
@@ -42,9 +53,15 @@ $home-button-clearance: $home-button-size + $home-button-offset * 2;
         bottom: 0;
         z-index: 1;
         background: var(--color-main);
-        margin-top: 10px;
+        margin-top: auto;
         padding-top: 10px;
         padding-bottom: $home-button-clearance;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .ShoppingListItemInputContainer {
+        margin-top: 10px;
         display: flex;
 
         .ShoppingListItemInput {

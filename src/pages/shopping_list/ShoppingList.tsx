@@ -91,31 +91,33 @@ const ShoppingList: React.FC = () => {
             {listItems.map((item) => (
               <ShoppingListItem id={item.id} text={item.text} key={item.id} />
             ))}
-            <button
-              onClick={clearShoppingList}
-              className="ShoppingListButton ShoppingListClearButton"
-            >
-              Clear Shopping List
-            </button>
-            <div className="ShoppingListItemInputContainer">
-              <input
-                className="ShoppingListItemInput"
-                type="text"
-                placeholder="Add an item"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    submitNewItem();
-                  }
-                }}
-              />
+            <div className="ShoppingListFooter">
               <button
-                onClick={submitNewItem}
-                className="ShoppingListButton ShoppingListSubmitButton"
+                onClick={clearShoppingList}
+                className="ShoppingListButton ShoppingListClearButton"
               >
-                Add
+                Clear Shopping List
               </button>
+              <div className="ShoppingListItemInputContainer">
+                <input
+                  className="ShoppingListItemInput"
+                  type="text"
+                  placeholder="Add an item"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      submitNewItem();
+                    }
+                  }}
+                />
+                <button
+                  onClick={submitNewItem}
+                  className="ShoppingListButton ShoppingListSubmitButton"
+                >
+                  Add
+                </button>
+              </div>
             </div>
           </div>
           <div className="HomeButtonContainer">
