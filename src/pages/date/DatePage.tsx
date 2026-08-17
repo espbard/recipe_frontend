@@ -3,6 +3,7 @@ import PageTemplate from "../../components/templates/PageTemplate/PageTemplate";
 import { CustomButton } from "../../components/atoms/CustomButton/CustomButton";
 import { Icon, PopUpFunctions } from "../../common/common";
 import missing_picture_placeholder from "../../assets/images/missing_picture_placeholder.png";
+import RecipeImage from "../../components/atoms/RecipeImage/RecipeImage";
 import "./DatePage.scss";
 import ServerIface from "../../ServerIface";
 import React, { useEffect } from "react";
@@ -63,7 +64,9 @@ const DatePage: React.FC = () => {
     };
 
     getRecipe();
-  });
+    // Without the dependencies this ran on every render, refetching the recipe
+    // and reloading its image over and over.
+  }, [year, month, day]);
 
   useEffect(() => {
     dispatch(setGlobalLoading(true));
@@ -172,7 +175,7 @@ const DatePage: React.FC = () => {
             </h1>
             {recipe.id > 0 ? (
               <div className="DatePageRecipe" onClick={onRecipePressed}>
-                <img src={recipe.image} alt={recipe.title} />
+                <RecipeImage image={recipe.image} alt={recipe.title} />
                 <h1>{recipe.title}</h1>
               </div>
             ) : (

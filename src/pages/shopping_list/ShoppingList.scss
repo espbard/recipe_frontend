@@ -1,16 +1,31 @@
 #ShoppingList {
-    height: 100%;
+    box-sizing: border-box;
+    // Grow with the list instead of being clamped to the visible area, otherwise
+    // the background stops where the viewport ends on a long list.
+    min-height: calc(100% + 15px);
+    flex-shrink: 0;
     width: 100%;
     background: var(--color-main);
+    // Cancels out #MainContent's top padding so the background reaches the nav bar.
     margin-top: -15px;
     padding-top: 15px;
-    padding-bottom: 15px;
     font-family: Georgia, 'Times New Roman', Times, serif;
     font-style: italic;
     display: flex;
     flex-direction: column;
 
     #ShoppingListTitle {
+        // Stays put at the top of the viewport while the list scrolls behind it.
+        // The margins become padding so the strip is opaque all the way through,
+        // and the offset matches the negative top margin above, which lifts the
+        // page into #MainContent's top padding.
+        position: sticky;
+        top: -15px;
+        z-index: 2;
+        background: var(--color-main);
+        margin: 0;
+        padding-top: 26px;
+        padding-bottom: 26px;
         width: 100%;
         text-align: center;
         color: var(--color-charcoal);
@@ -19,7 +34,22 @@
     #ShoppingListContainer {
         padding-left: 20px;
         padding-right: 20px;
-        height: 100%;
+        flex: 1 0 auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .ShoppingListFooter {
+        // Stays put at the bottom of the viewport while a long list scrolls
+        // behind it, with a little padding underneath so it is not flush
+        // against the bottom edge.
+        position: sticky;
+        bottom: 0;
+        z-index: 1;
+        background: var(--color-main);
+        margin-top: auto;
+        padding-top: 10px;
+        padding-bottom: 20px;
         display: flex;
         flex-direction: column;
     }

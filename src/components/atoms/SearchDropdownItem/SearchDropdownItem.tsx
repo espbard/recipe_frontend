@@ -1,8 +1,8 @@
-import React, { SyntheticEvent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Capitalize } from "../../../common/common";
 import "./SearchDropdownItem.scss";
 import ServerIface from "../../../ServerIface";
-import missing_picture_placeholder from "../../../assets/images/missing_picture_placeholder.png";
+import RecipeImage from "../RecipeImage/RecipeImage";
 import { useNavigate } from "react-router-dom";
 
 interface SearchDropdownItemProps {
@@ -74,14 +74,10 @@ const SearchDropdownItem: React.FC<SearchDropdownItemProps> = ({ id }) => {
     window.location.reload();
   };
 
-  const addImageFallback = (event: SyntheticEvent<HTMLImageElement, Event>) => {
-    event.currentTarget.src = missing_picture_placeholder;
-  };
-
   return (
     <div className="SearchDropdownItem" onClick={handleClick}>
       <div className="SearchDropdownImageContainer">
-        <img src={image} onError={addImageFallback} alt="Recipe" />
+        <RecipeImage image={image} alt="Recipe" />
       </div>
       <div className="SearchDropdownTextContainer">
         <p>{Capitalize(recipe.title)}</p>

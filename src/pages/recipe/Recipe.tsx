@@ -1,11 +1,11 @@
-import React, { SyntheticEvent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import PageTemplate from "../../components/templates/PageTemplate/PageTemplate";
 import { useNavigate } from "react-router-dom";
 import ServerIface from "../../ServerIface";
 import "./Recipe.scss";
 import { CustomButton } from "../../components/atoms/CustomButton/CustomButton";
-import missing_picture_placeholder from "../../assets/images/missing_picture_placeholder.png";
+import RecipeImage from "../../components/atoms/RecipeImage/RecipeImage";
 import TrashIcon from "../../assets/images/trash-bin-trash-svgrepo-com.svg";
 import PenIcon from "../../assets/images/pen-svgrepo-com.svg";
 import { Tag } from "../../components/molecules/Tag/Tag";
@@ -321,10 +321,6 @@ const Recipe: React.FC = () => {
     }
   }, [recipe.meal_type]);
 
-  const addImageFallback = (event: SyntheticEvent<HTMLImageElement, Event>) => {
-    event.currentTarget.src = missing_picture_placeholder;
-  };
-
   const buttonContainerClasses = classNames("RecipeButtonsContainer", {
     DisabledButtonsContainer: tokenCookie === undefined,
   });
@@ -336,11 +332,7 @@ const Recipe: React.FC = () => {
         <div id="RecipePage" key={"recipe-page"}>
           <div className="RecipeContainer">
             <div className="RecipeImageContainer">
-              {image === null || image.length === 0 ? (
-                <img src={missing_picture_placeholder} />
-              ) : (
-                <img src={image} alt="Recipe" onError={addImageFallback} />
-              )}
+              <RecipeImage image={image} alt="Recipe" priority />
             </div>
             <div className="Recipe">
               <div className="RecipeRow" id="RecipeTitleContainer">

@@ -6,8 +6,6 @@ import { useAppDispatch } from "../../redux/hooks";
 import { setGlobalLoading, setPopup } from "../../redux/globalSlice";
 import { PopUpFunctions } from "../../common/common";
 import ShoppingListItem from "../../components/organisms/ShoppingListItem/ShoppingListItem";
-import HouseIcon from "../../assets/images/house-svg.svg";
-import { useNavigate } from "react-router-dom";
 
 interface ListItem {
   id: number;
@@ -19,8 +17,6 @@ const ShoppingList: React.FC = () => {
   const [inputValue, setInputValue] = useState<string>("");
 
   const dispatch = useAppDispatch();
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     const getListItems = () => {
@@ -91,40 +87,34 @@ const ShoppingList: React.FC = () => {
             {listItems.map((item) => (
               <ShoppingListItem id={item.id} text={item.text} key={item.id} />
             ))}
-            <div className="ShoppingListItemInputContainer">
-              <input
-                className="ShoppingListItemInput"
-                type="text"
-                placeholder="Add an item"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    submitNewItem();
-                  }
-                }}
-              />
+            <div className="ShoppingListFooter">
               <button
-                onClick={submitNewItem}
-                className="ShoppingListButton ShoppingListSubmitButton"
+                onClick={clearShoppingList}
+                className="ShoppingListButton ShoppingListClearButton"
               >
-                Add
+                Clear Shopping List
               </button>
-            </div>{" "}
-            <button
-              onClick={clearShoppingList}
-              className="ShoppingListButton ShoppingListClearButton"
-            >
-              Clear Shopping List
-            </button>
-          </div>
-          <div className="HomeButtonContainer">
-            <img
-              src={HouseIcon}
-              alt="HouseIcon"
-              className="HouseIcon"
-              onClick={() => navigate("/")}
-            />
+              <div className="ShoppingListItemInputContainer">
+                <input
+                  className="ShoppingListItemInput"
+                  type="text"
+                  placeholder="Add an item"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      submitNewItem();
+                    }
+                  }}
+                />
+                <button
+                  onClick={submitNewItem}
+                  className="ShoppingListButton ShoppingListSubmitButton"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       }
