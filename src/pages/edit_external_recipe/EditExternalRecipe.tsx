@@ -160,7 +160,9 @@ const EditExternalRecipe: React.FC = () => {
     const iface = new ServerIface();
 
     if (validateInput()) {
-      let img_name = "";
+      // The image name is only known once the upload has finished, so the
+      // recipe is submitted from that callback. Submitting here as well used to
+      // create a second recipe, without an image, alongside the real one.
       if (image !== null) {
         let img_cpy = new File([image], format_image_name(image.name), {
           type: image.type,
@@ -169,27 +171,22 @@ const EditExternalRecipe: React.FC = () => {
         resizeImage(img_cpy, IMAGE_MAX_SIZE).then((new_img) => {
           setImage(new_img);
           iface.uploadImage(new_img).then((res) => {
-            if (res !== undefined && res.message !== undefined) {
-              img_name = res.message;
-
+            // A failed upload reports its own error, and leaves the recipe to
+            // be submitted again rather than storing the failure message as the
+            // image name.
+            if (res !== undefined && res.success && res.message !== undefined) {
               if (id !== undefined) {
-                submitUpdateRecipe(img_name);
+                submitUpdateRecipe(res.message);
               } else {
-                submitNewRecipe(img_name);
+                submitNewRecipe(res.message);
               }
             }
           });
         });
-      }
-
-      if (id !== undefined) {
-        if (img_name === undefined || img_name === "") {
-          submitUpdateRecipe();
-        }
+      } else if (id !== undefined) {
+        submitUpdateRecipe();
       } else {
-        if (img_name === undefined || img_name === "") {
-          submitNewRecipe();
-        }
+        submitNewRecipe();
       }
     }
     dispatch(setGlobalLoading(false));
