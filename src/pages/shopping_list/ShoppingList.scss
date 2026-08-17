@@ -1,9 +1,3 @@
-// The home button is fixed to the bottom left of the viewport, so the add item
-// bar keeps this much space free below itself to stay clear of it.
-$home-button-size: 65px;
-$home-button-offset: 20px;
-$home-button-clearance: $home-button-size + $home-button-offset * 2;
-
 #ShoppingList {
     box-sizing: border-box;
     // Grow with the list instead of being clamped to the visible area, otherwise
@@ -47,15 +41,15 @@ $home-button-clearance: $home-button-size + $home-button-offset * 2;
 
     .ShoppingListFooter {
         // Stays put at the bottom of the viewport while a long list scrolls
-        // behind it. The bottom padding is the space kept free for the home
-        // button and doubles as padding underneath the input.
+        // behind it, with a little padding underneath so it is not flush
+        // against the bottom edge.
         position: sticky;
         bottom: 0;
         z-index: 1;
         background: var(--color-main);
         margin-top: auto;
         padding-top: 10px;
-        padding-bottom: $home-button-clearance;
+        padding-bottom: 20px;
         display: flex;
         flex-direction: column;
     }
@@ -111,9 +105,4 @@ $home-button-clearance: $home-button-size + $home-button-offset * 2;
     .ShoppingListButton:hover {
         color: black;
     }
-}
-
-// Sits inside the space the add item bar reserves for it.
-#ShoppingList .HomeButtonContainer {
-    bottom: $home-button-offset;
 }

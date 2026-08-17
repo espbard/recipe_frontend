@@ -6,8 +6,6 @@ import { useAppDispatch } from "../../redux/hooks";
 import { setGlobalLoading, setPopup } from "../../redux/globalSlice";
 import { PopUpFunctions } from "../../common/common";
 import ShoppingListItem from "../../components/organisms/ShoppingListItem/ShoppingListItem";
-import HouseIcon from "../../assets/images/house-svg.svg";
-import { useNavigate } from "react-router-dom";
 
 interface ListItem {
   id: number;
@@ -19,8 +17,6 @@ const ShoppingList: React.FC = () => {
   const [inputValue, setInputValue] = useState<string>("");
 
   const dispatch = useAppDispatch();
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     const getListItems = () => {
@@ -119,14 +115,6 @@ const ShoppingList: React.FC = () => {
                 </button>
               </div>
             </div>
-          </div>
-          <div className="HomeButtonContainer">
-            <img
-              src={HouseIcon}
-              alt="HouseIcon"
-              className="HouseIcon"
-              onClick={() => navigate("/")}
-            />
           </div>
         </div>
       }
