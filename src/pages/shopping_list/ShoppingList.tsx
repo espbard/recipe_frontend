@@ -91,6 +91,12 @@ const ShoppingList: React.FC = () => {
             {listItems.map((item) => (
               <ShoppingListItem id={item.id} text={item.text} key={item.id} />
             ))}
+            <button
+              onClick={clearShoppingList}
+              className="ShoppingListButton ShoppingListClearButton"
+            >
+              Clear Shopping List
+            </button>
             <div className="ShoppingListItemInputContainer">
               <input
                 className="ShoppingListItemInput"
@@ -110,13 +116,7 @@ const ShoppingList: React.FC = () => {
               >
                 Add
               </button>
-            </div>{" "}
-            <button
-              onClick={clearShoppingList}
-              className="ShoppingListButton ShoppingListClearButton"
-            >
-              Clear Shopping List
-            </button>
+            </div>
           </div>
           <div className="HomeButtonContainer">
             <img
