@@ -1,7 +1,7 @@
-import { Component, SyntheticEvent } from "react";
+import { Component } from "react";
 import ServerIface from "../../../ServerIface";
 import "./RecipeCard.scss";
-import missing_picture_placeholder from "../../../assets/images/missing_picture_placeholder.png";
+import RecipeImage from "../../atoms/RecipeImage/RecipeImage";
 import CheckIcon from "../../../assets/images/check.svg";
 import CrossIcon from "../../../assets/images/cross.svg";
 import ListIcon from "../../../assets/images/list.svg";
@@ -20,7 +20,6 @@ interface RecipeCardProps {
 
 interface RecipeCardStates {
   author: string;
-  image: string;
   ingredients: string[];
 }
 
@@ -38,7 +37,6 @@ export class RecipeCard extends Component<RecipeCardProps, RecipeCardStates> {
     super(props);
     this.state = {
       author: "N/A",
-      image: "",
       ingredients: [],
     };
   }
@@ -60,24 +58,9 @@ export class RecipeCard extends Component<RecipeCardProps, RecipeCardStates> {
         }
       });
     }
-
-    if (
-      this.props.recipe_object.image !== undefined &&
-      this.props.recipe_object.image !== null &&
-      this.props.recipe_object.image !== "" &&
-      this.props.recipe_object.image !== "undefined"
-    ) {
-      const cdn_url = iface.getCdn();
-      this.setState({ image: cdn_url + this.props.recipe_object.image });
-    }
   }
 
   render() {
-    const addImageFallback = (
-      event: SyntheticEvent<HTMLImageElement, Event>
-    ) => {
-      event.currentTarget.src = missing_picture_placeholder;
-    };
     const recipeCardClasses = classNames("RecipeCardContainer", {
       Breakfast: this.props.recipe_object.meal_type === "Breakfast",
       Lunch: this.props.recipe_object.meal_type === "Lunch",
@@ -97,7 +80,7 @@ export class RecipeCard extends Component<RecipeCardProps, RecipeCardStates> {
     return (
       <NavLink to={"/recipe/" + recipe_page_id} className={recipeCardClasses}>
         <div className="RecipeCardImageContainer">
-          <img src={this.state.image} alt="Recipe" onError={addImageFallback} />
+          <RecipeImage image={this.props.recipe_object.image} alt="Recipe" />
         </div>
         <div className="RecipeCardContentContainer">
           <div className="RecipeCardTitleContainer">

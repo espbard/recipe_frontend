@@ -14,10 +14,10 @@ import {
   PopUpFunctions,
 } from "../../common/common";
 import { Icon } from "../../common/common";
+import { IMAGE_MAX_SIZE, resizeImage } from "../../common/images";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { setGlobalLoading, setPopup } from "../../redux/globalSlice";
-import Resizer from "react-image-file-resizer";
 
 interface RecipeIface {
   id: number;
@@ -505,12 +505,15 @@ const EditRecipe: React.FC = () => {
     if (recipe.image !== originalImageName) {
       if (image !== null) {
         let image_name = format_image_name(image.name);
-        set_originalImageName(image_name);
-        recipe_to_post.image = image_name;
 
         let image_cpy = new File([image], image_name, { type: image.type });
         resizeImage(image_cpy, IMAGE_MAX_SIZE).then((new_img) => {
+          // resizeImage re-encodes the image, so the name to store is the one
+          // it gives back rather than the name of the file that was picked.
           set_image(new_img);
+          set_originalImageName(new_img.name);
+          recipe_to_post.image = new_img.name;
+
           let res = serverIface.uploadImage(new_img);
 
           res.then((res) => {
@@ -565,12 +568,10 @@ const EditRecipe: React.FC = () => {
 
     const serverIface = new ServerIface();
     if (image !== null) {
-      let img_cpy = new File([image], format_image_name(image.name), {
+      let image_cpy = new File([image], format_image_name(image.name), {
         type: image.type,
       });
-      set_image(img_cpy);
 
-      let image_cpy = new File([image], image.name, { type: image.type });
       resizeImage(image_cpy, IMAGE_MAX_SIZE).then((new_img) => {
         set_image(new_img);
         let res = serverIface.uploadImage(new_img);
@@ -611,29 +612,6 @@ const EditRecipe: React.FC = () => {
   const TagsContainerClasses = classNames("TagsContainer", {
     EditRecipeInput: true,
   });
-
-  const IMAGE_MAX_SIZE = 1200;
-
-  const resizeImage = (image: File, maxSize: number): Promise<File> => {
-    return new Promise((resolve, reject) => {
-      Resizer.imageFileResizer(
-        image,
-        maxSize,
-        maxSize,
-        image.type.split("/")[1],
-        100,
-        0,
-        (uri) => {
-          if (uri instanceof File) {
-            resolve(uri);
-          } else {
-            reject(new Error("Failed to resize image"));
-          }
-        },
-        "file"
-      );
-    });
-  };
 
   const navigate = useNavigate();
 

@@ -11,7 +11,7 @@ import {
   setRecipeList,
 } from "../../redux/globalSlice";
 import { PopUpFunctions } from "../../common/common";
-import Resizer from "react-image-file-resizer";
+import { IMAGE_MAX_SIZE, resizeImage } from "../../common/images";
 
 const EditExternalRecipe: React.FC = () => {
   const { id } = useParams();
@@ -42,28 +42,6 @@ const EditExternalRecipe: React.FC = () => {
     return !hasError;
   };
   const dispatch = useAppDispatch();
-
-  const IMAGE_MAX_SIZE = 1200;
-  const resizeImage = (image: File, maxSize: number): Promise<File> => {
-    return new Promise((resolve, reject) => {
-      Resizer.imageFileResizer(
-        image,
-        maxSize,
-        maxSize,
-        image.type.split("/")[1],
-        100,
-        0,
-        (uri) => {
-          if (uri instanceof File) {
-            resolve(uri);
-          } else {
-            reject(new Error("Failed to resize image"));
-          }
-        },
-        "file"
-      );
-    });
-  };
 
   const format_image_name = (name: string) => {
     if (name === undefined) {

@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import "./SelectRecipeBox.scss";
 import ServerIface from "../../../ServerIface";
 import missing_picture_placeholder from "../../../assets/images/missing_picture_placeholder.png";
+import RecipeImage from "../../atoms/RecipeImage/RecipeImage";
 import classNames from "classnames";
 import CloseIcon from "../../../assets/images/close-svgrepo-com.svg";
 
@@ -138,7 +139,11 @@ const SelectRecipeBox: React.FC<SelectRecipeBoxProps> = ({
                 key={e.id}
                 onClick={() => onRecipeClick(e.id)}
               >
-                <img src={e.image} className="SelectRecipeListItemImage" />
+                <RecipeImage
+                  image={e.image}
+                  alt={e.title}
+                  className="SelectRecipeListItemImage"
+                />
                 <p className="SelectRecipeListItemTitle">{e.title}</p>
               </div>
             );
